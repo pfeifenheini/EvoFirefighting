@@ -1,3 +1,6 @@
+package grid;
+
+
 
 public class Coordinate implements Cloneable {
 	public int x;

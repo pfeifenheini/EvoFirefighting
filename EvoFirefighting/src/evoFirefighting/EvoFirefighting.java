@@ -1,14 +1,21 @@
+package evoFirefighting;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+
+import grid.GridCanvas;
+import strategy.Strategy;
+import strategy.connectedStrategy.ConnectedStrategy;
 
 public class EvoFirefighting extends JFrame implements ActionListener {
 
@@ -26,12 +33,17 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	private JButton zoomOut =
 			new JButton("-");
 	
+	private final String[] strategyChoices = {"connected", "scattered"}; 
+	private JComboBox<String> strategyChoice =
+			new JComboBox<String>(strategyChoices);
+	
+	private JButton decreaseAnimationSpeed =
+			new JButton("<<");
 	private JButton animate =
 			new JButton("animate");
 	private JButton increaseAnimationSpeed =
 			new JButton(">>");
-	private JButton decreaseAnimationSpeed =
-			new JButton("<<");
+
 	
 	private JButton startEvolution =
 			new JButton("start evolution");
@@ -91,6 +103,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		contentPane.add(topPane,BorderLayout.PAGE_START);
 		
 		bottomPane = new JPanel();
+		bottomPane.add(strategyChoice);
 		bottomPane.add(decreaseAnimationSpeed);
 		bottomPane.add(animate);
 		bottomPane.add(increaseAnimationSpeed);
@@ -102,6 +115,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		
 		zoomIn.addActionListener(this);
 		zoomOut.addActionListener(this);
+		strategyChoice.addActionListener(this);
 		decreaseAnimationSpeed.addActionListener(this);
 		animate.addActionListener(this);
 		increaseAnimationSpeed.addActionListener(this);
@@ -147,7 +161,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			if(evolution != null) {
 				evolution.stopEvolution();
 			}
-			evolution = new Evolution(100);
+			evolution = new Evolution(100,(String)strategyChoice.getSelectedItem());
 			evolution.startEvolution();
 			
 			Timer t = new Timer(

@@ -1,3 +1,6 @@
+package strategy;
+
+import grid.Grid;
 
 public interface Strategy extends Cloneable, Comparable<Strategy> {
 
@@ -15,11 +18,7 @@ public interface Strategy extends Cloneable, Comparable<Strategy> {
 	 * combines one protection and one spreading step.
 	 * @return true if the fire can continue spreading
 	 */
-	public default boolean step() {
-		if(finished()) return false;
-		protectStep();
-		return spreadStep();
-	}
+	public boolean step();
 	public boolean finished();
 	public double fitness();
 	public Grid cloneGrid();

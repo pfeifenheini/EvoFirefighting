@@ -1,4 +1,8 @@
+package evoFirefighting;
+
 import java.awt.event.MouseAdapter;
+
+import grid.GridCanvas;
 
 public class GridMouseAdapter extends MouseAdapter {
 	

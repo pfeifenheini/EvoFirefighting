@@ -1,3 +1,6 @@
+package grid;
+
+
 import java.awt.Dimension;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -128,6 +131,10 @@ public class Grid implements Cloneable {
 	
 	public int protectedCells() {
 		return numberOfProtectedCells;
+	}
+	
+	public int fireFrontSize() {
+		return fireFront.size();
 	}
 	
 	public int time() {

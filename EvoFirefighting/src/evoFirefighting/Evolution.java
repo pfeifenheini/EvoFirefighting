@@ -1,21 +1,26 @@
-import java.util.ArrayList;
+package evoFirefighting;
+
 import java.util.Arrays;
-import java.util.Collections;
+import strategy.Strategy;
+import strategy.connectedStrategy.ConnectedStrategy;
+import strategy.scatteredStrategy.ScatteredStrategy;
 
 public class Evolution implements Runnable{
 	
-	private static final double parentRation = 0.2;
+//	private static final double parentRation = 0.2;
 	
 	Strategy[] population;
 	
 	Thread thread;
 	private boolean running = false;
 	
-	public Evolution(int populationSize) {
+	public Evolution(int populationSize, String strategy) {
 		population = new Strategy[populationSize];
 		for(int i=0;i<population.length;i++) {
-//			population[i] = new ConnectedStrategy();
-			population[i] = new ScatteredStrategy();
+			if(strategy.equals("scattered"))
+				population[i] = new ScatteredStrategy();
+			else
+				population[i] = new ConnectedStrategy();
 		}
 		Arrays.sort(population);
 	}
@@ -47,7 +52,6 @@ public class Evolution implements Runnable{
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -59,7 +63,6 @@ public class Evolution implements Runnable{
 	@Override
 	public void run() {
 		running = true;
-		Strategy s;
 		while(running) {
 			synchronized(this) {
 				for(int i=1;i<population.length;i++) {

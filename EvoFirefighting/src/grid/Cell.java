@@ -1,3 +1,4 @@
+package grid;
 
 public class Cell implements Cloneable {
 	
