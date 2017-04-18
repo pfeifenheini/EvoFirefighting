@@ -188,7 +188,6 @@ public class ConnectedStrategy implements Strategy {
 		ConnectedStrategy.budget = budget;
 		ConnectedStrategy.mutationRate = mutationRate;
 		ConnectedStrategy.startFire = startFire;
-		
 	}
 
 	@Override
@@ -236,7 +235,6 @@ public class ConnectedStrategy implements Strategy {
 			s.fitness = fitness;
 			
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return s;

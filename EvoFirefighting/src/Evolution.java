@@ -13,8 +13,10 @@ public class Evolution implements Runnable{
 	
 	public Evolution(int populationSize) {
 		population = new Strategy[populationSize];
-		for(int i=0;i<population.length;i++)
-			population[i] = new ConnectedStrategy();
+		for(int i=0;i<population.length;i++) {
+//			population[i] = new ConnectedStrategy();
+			population[i] = new ScatteredStrategy();
+		}
 		Arrays.sort(population);
 	}
 	
