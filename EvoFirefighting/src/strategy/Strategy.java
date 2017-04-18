@@ -25,6 +25,12 @@ public interface Strategy extends Cloneable, Comparable<Strategy> {
 	public void reset();
 	public void mutate();
 	public Strategy generateOffspring(Strategy p1, Strategy p2);
+	/**
+	 * Copies all parameters of the given strategy, is possible without the need to allocate new memory.
+	 * @param s
+	 * @return
+	 */
+	public void copy(Strategy s);
 	public Strategy clone();
 	public int compareTo(Strategy s);
 }

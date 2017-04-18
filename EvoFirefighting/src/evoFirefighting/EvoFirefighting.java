@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -16,6 +17,7 @@ import javax.swing.border.EmptyBorder;
 import grid.GridCanvas;
 import strategy.Strategy;
 import strategy.connectedStrategy.ConnectedStrategy;
+import strategy.connectedStrategy.Direction;
 
 public class EvoFirefighting extends JFrame implements ActionListener {
 
@@ -66,7 +68,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 					animationStep();
 				}
 			});
-	private Strategy strategyToAnimate;
+	private Strategy strategyToAnimate = null;
 	
 	private Evolution evolution = null;
 	
@@ -161,8 +163,10 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			if(evolution != null) {
 				evolution.stopEvolution();
 			}
-			evolution = new Evolution(100,(String)strategyChoice.getSelectedItem());
+			evolution = new Evolution(50,(String)strategyChoice.getSelectedItem());
 			evolution.startEvolution();
+			
+			strategyToAnimate = null;
 			
 			Timer t = new Timer(
 					500,
@@ -170,9 +174,13 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							if(!isAnimating()) {
-								strategyToAnimate = evolution.cloneBestStrategy(offset);
+								if(strategyToAnimate == null)
+									strategyToAnimate = evolution.cloneBestStrategy(offset);
+								else
+									evolution.copyBestStrategy(strategyToAnimate, offset);
 								while(strategyToAnimate.step());
 								canvas.loadGrid(strategyToAnimate.cloneGrid());
+								System.out.println("Generation: " + evolution.generation());
 							}
 						}
 					});
@@ -182,11 +190,22 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			startEvolution.setText("restart evolution");
 		}
 		if(e.getSource() == decreaseOffset) {
-			offset = Math.max(0, offset-1);
+			if((e.getModifiers() & ActionEvent.ALT_MASK) != 0)
+				offset = 0;
+			else if((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0)
+				offset = Math.max(0, offset-10);
+			else
+				offset = Math.max(0, offset-1);
 			offsetLabel.setText(Integer.toString(offset+1));
 		}
 		if(e.getSource() == increaseOffset) {
-			offset = Math.min(offset+1, evolution.populationSize()-1);
+			if((e.getModifiers() & ActionEvent.ALT_MASK) != 0)
+				offset = evolution.populationSize()-1;
+			else if((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0)
+				offset = Math.min(offset+10, evolution.populationSize()-1);
+			else
+				offset = Math.min(offset+1, evolution.populationSize()-1);
+			
 			offsetLabel.setText(Integer.toString(offset+1));
 		}
 		

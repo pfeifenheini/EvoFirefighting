@@ -11,6 +11,11 @@ public class Coordinate implements Cloneable {
 		this.y = y;
 	}
 	
+	public void copy(Coordinate c) {
+		x = c.x;
+		y = c.y;
+	}
+	
 	@Override
 	public Coordinate clone() {
 		Coordinate c = null;

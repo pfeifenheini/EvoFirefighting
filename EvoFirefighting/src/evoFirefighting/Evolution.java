@@ -7,12 +7,13 @@ import strategy.scatteredStrategy.ScatteredStrategy;
 
 public class Evolution implements Runnable{
 	
-//	private static final double parentRation = 0.2;
-	
 	Strategy[] population;
 	
 	Thread thread;
 	private boolean running = false;
+	private boolean pause = false;
+	
+	private int generation = 0;
 	
 	public Evolution(int populationSize, String strategy) {
 		population = new Strategy[populationSize];
@@ -26,6 +27,20 @@ public class Evolution implements Runnable{
 	}
 	
 	/**
+	 * Copies the currently best strategy.
+	 * @param target strategy that will be overwritten. Needs to be instantiated
+	 * @param offset
+	 */
+	public void copyBestStrategy(Strategy target, int offset) {
+		offset = Math.max(0, Math.min(offset, population.length));
+		pause = true;
+		synchronized(this) {
+			target.copy(population[offset]);
+			notify();
+		}
+	}
+	
+	/**
 	 * Returns the i-th best strategy. i is defined by the offset.
 	 * @param offset
 	 * @return i-th best strategy in the population
@@ -33,8 +48,10 @@ public class Evolution implements Runnable{
 	public Strategy cloneBestStrategy(int offset) {
 		Strategy s;
 		offset = Math.max(0, Math.min(offset, population.length));
+		pause = true;
 		synchronized(this) {
 			s = population[offset].clone();
+			notify();
 		}
 		return s;
 	}
@@ -60,17 +77,34 @@ public class Evolution implements Runnable{
 		return population.length;
 	}
 	
+	public int generation() {
+		return generation;
+	}
+	
 	@Override
 	public void run() {
 		running = true;
-		while(running) {
-			synchronized(this) {
-				for(int i=1;i<population.length;i++) {
-					population[i] = population[0].clone();
-					population[i].mutate();
+		Strategy tmp = population[0].clone();
+		synchronized(this) {
+			while(running) {
+				for(int i=0;i<population.length;i++) {
+					tmp.copy(population[i]);
+					tmp.mutate();
+					if(tmp.fitness()<population[i].fitness()) {
+						population[i].copy(tmp);
+					}
+				}
+				Arrays.sort(population);
+				generation++;
+				if(pause) {
+					pause = false;
+					try {
+						wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
-			Arrays.sort(population);
 		}
 	}
 }

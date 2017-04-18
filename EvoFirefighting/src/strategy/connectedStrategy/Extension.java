@@ -16,6 +16,11 @@ class Extension implements Cloneable {
 		this.extendFront = extendFront;
 	}
 	
+	public void copy(Extension toCopy) {
+		dir = toCopy.dir;
+		extendFront = toCopy.extendFront;
+	}
+	
 	@Override
 	public Extension clone() {
 		Extension e = null;

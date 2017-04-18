@@ -7,6 +7,7 @@ import grid.Coordinate;
 import grid.Grid;
 import strategy.GeneralStrategy;
 import strategy.Strategy;
+import strategy.connectedStrategy.ConnectedStrategy;
 
 public class ScatteredStrategy extends GeneralStrategy {
 	
@@ -83,6 +84,15 @@ public class ScatteredStrategy extends GeneralStrategy {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public void copy(Strategy s) {
+		ScatteredStrategy toCopy = (ScatteredStrategy) s;
+		for(int i=0;i<sequence.size();i++)
+			sequence.get(i).copy(toCopy.sequence.get(i));
+		fitness = toCopy.fitness;
+		reset();
+	};
 
 	@Override
 	public Strategy clone() {

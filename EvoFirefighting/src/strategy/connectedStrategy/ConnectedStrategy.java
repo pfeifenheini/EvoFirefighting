@@ -136,6 +136,16 @@ public class ConnectedStrategy extends GeneralStrategy {
 	}
 	
 	@Override
+	public void copy(Strategy s) {
+		ConnectedStrategy toCopy = (ConnectedStrategy) s;
+		start.copy(toCopy.start);
+		for(int i=0;i<sequence.size();i++)
+			sequence.get(i).copy(toCopy.sequence.get(i));
+		fitness = toCopy.fitness;
+		reset();
+	};
+	
+	@Override
 	public ConnectedStrategy clone() {
 		ConnectedStrategy s = null;
 		s = (ConnectedStrategy) super.clone();

@@ -1,7 +1,7 @@
 package strategy.connectedStrategy;
 
 
-enum Direction {
+public enum Direction {
 	N, NE, E, SE, S, SW, W, NW;
 	
 	/**

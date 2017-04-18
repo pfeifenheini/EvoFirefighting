@@ -15,7 +15,7 @@ public abstract class GeneralStrategy implements Strategy {
 	protected static int gridWidth = 151;
 	protected static int gridHeigth = 151;
 	protected static double initialAccount = 2.0;
-	protected static double budget = 2.0;
+	protected static double budget = 1.8;
 	protected static double mutationRate = 2.5;
 	protected static Coordinate startFire  = new Coordinate(gridWidth/2,gridHeigth/2);
 	
@@ -94,8 +94,6 @@ public abstract class GeneralStrategy implements Strategy {
 
 	@Override
 	public int compareTo(Strategy s) {
-		if(!(s instanceof ConnectedStrategy))
-			throw new ClassCastException("Tries to compare incompatible Strategies");
 		return (int) Math.signum(fitness()-s.fitness());
 	}
 }
