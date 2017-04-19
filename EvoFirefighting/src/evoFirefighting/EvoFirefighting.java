@@ -1,11 +1,14 @@
 package evoFirefighting;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -14,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import grid.Grid;
 import grid.GridCanvas;
 import strategy.Strategy;
 import strategy.connectedStrategy.ConnectedStrategy;
@@ -27,6 +31,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	private JPanel centerPane;
 	private JPanel topPane;
 	private JPanel bottomPane;
+	private JPanel infoPane;
 	
 	private GridCanvas canvas;
 
@@ -35,7 +40,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	private JButton zoomOut =
 			new JButton("-");
 	
-	private final String[] strategyChoices = {"connected", "scattered"}; 
+	private final String[] strategyChoices = {"connected", "scattered", "protect"}; 
 	private JComboBox<String> strategyChoice =
 			new JComboBox<String>(strategyChoices);
 	
@@ -48,7 +53,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 
 	
 	private JButton startEvolution =
-			new JButton("start evolution");
+			new JButton("(re)start evolution");
 	private JButton decreaseOffset = 
 			new JButton("-");
 	private int offset = 0;
@@ -97,6 +102,10 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		canvas = new GridCanvas();
 		centerPane.add(canvas);
 		contentPane.add(centerPane,BorderLayout.CENTER);
+		
+		infoPane = new JPanel();
+		infoPane.setLayout(new BoxLayout(infoPane, BoxLayout.Y_AXIS));
+		contentPane.add(infoPane,BorderLayout.LINE_END);
 		
 		topPane = new JPanel();
 		topPane.add(new JLabel("Zoom: "));
@@ -179,15 +188,15 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 								else
 									evolution.copyBestStrategy(strategyToAnimate, offset);
 								while(strategyToAnimate.step());
-								canvas.loadGrid(strategyToAnimate.cloneGrid());
+								Grid g = strategyToAnimate.cloneGrid();
+								loadGrid(g);
 								System.out.println("Generation: " + evolution.generation());
+								System.out.println("Fitness: " + strategyToAnimate.fitness());
 							}
 						}
 					});
 			
 			t.start();
-			
-			startEvolution.setText("restart evolution");
 		}
 		if(e.getSource() == decreaseOffset) {
 			if((e.getModifiers() & ActionEvent.ALT_MASK) != 0)
@@ -210,6 +219,22 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		}
 		
 		repaint();
+	}
+	
+	private void updateInfo(Grid g) {
+		infoPane.removeAll();
+		
+		addInfoText("width: " + g.width());
+		addInfoText("heigth: " + g.heigth());
+		addInfoText("burning: " + g.burningCells());
+		addInfoText("protected: " + g.protectedCells());
+		addInfoText("time: " + g.time());
+		pack();
+	}
+	
+	private void addInfoText(String s) {
+		JLabel label = new JLabel(s);
+		infoPane.add(label);
 	}
 	
 	public boolean isAnimating() {
@@ -245,11 +270,16 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			else
 				strategyToAnimate.spreadStep();
 			animationTime++;
-			canvas.loadGrid(strategyToAnimate.cloneGrid());
+			loadGrid(strategyToAnimate.cloneGrid());
 		}
 		else {
 			stopAnimation();
 		}
+	}
+	
+	private void loadGrid(Grid g) {
+		canvas.loadGrid(g);
+		updateInfo(g);
 	}
 	
 	public void stopAnimation() {
