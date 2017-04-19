@@ -17,8 +17,8 @@ public class GridCanvas extends JPanel {
 	
 	public static final int REFRESH_RATE = 30;
 	public static final int DEFAULT_PIXEL_SIZE = 5;
-	public static final int DEFAULT_WIDTH = 151;
-	public static final int DEFAULT_HEIGTH = 151;
+	public static final int DEFAULT_WIDTH = 101;
+	public static final int DEFAULT_HEIGTH = 101;
 	public static final int DEFAULT_ANIMATION_DELAY = 500;
 	
 	private int pixelSize = DEFAULT_PIXEL_SIZE;
@@ -80,8 +80,9 @@ public class GridCanvas extends JPanel {
 					g.fillRect(x*pixelSize, (height-y-1)*pixelSize, pixelSize, pixelSize);
 				}
 			}
-			
-			// paint raster
+		}
+		// paint raster
+		if(pixelSize>=4) {
 			g.setColor(Color.lightGray);
 			for(int x=0;x<width;x++) {
 				for(int y=0;y<height;y++) {
