@@ -15,6 +15,8 @@ public class Grid implements Cloneable {
 	private int time = 0;
 	private int numberOfBurningCells = 0;
 	private int numberOfProtectedCells = 0;
+	private int[] burningCellsPerRow;
+	private int timeToReachBottom = -1;
 	private boolean fireReachedEdge = false;
 	
 	Queue<Coordinate> fireFront = new LinkedList<Coordinate>();
@@ -28,6 +30,7 @@ public class Grid implements Cloneable {
 		for(int x=0;x<width;x++)
 			for(int y=0;y<heigth;y++)
 				cells[x][y] = new Cell(x,y);
+		burningCellsPerRow = new int[heigth];
 	}
 	
 	public State state(int x, int y) {
@@ -48,7 +51,10 @@ public class Grid implements Cloneable {
 		time = 0;
 		numberOfBurningCells = 0;
 		numberOfProtectedCells = 0;
+		for(int i=0;i<burningCellsPerRow.length;i++)
+			burningCellsPerRow[i] = 0;
 		fireReachedEdge = false;
+		timeToReachBottom = -1;
 		fireFront.clear();
 	}
 	
@@ -66,6 +72,9 @@ public class Grid implements Cloneable {
 				numberOfBurningCells++;
 				if(x==0 || y==0 || x==width-1 || y==heigth-1)
 					fireReachedEdge = true;
+				burningCellsPerRow[y]++;
+				if(y==0 && timeToReachBottom==-1)
+					timeToReachBottom = time;
 				return true;
 			}
 		}
@@ -96,6 +105,7 @@ public class Grid implements Cloneable {
 	public boolean spreadFire() {
 		int currentFrontSize = fireFront.size();
 		Coordinate c;
+		time++;
 		for(int i=0;i<currentFrontSize;i++) {
 			c = fireFront.remove();
 			ignite(c.x+1,c.y);
@@ -103,7 +113,6 @@ public class Grid implements Cloneable {
 			ignite(c.x,c.y+1);
 			ignite(c.x,c.y-1);
 		}
-		time++;
 		return !fireFront.isEmpty();
 	}
 	
@@ -125,6 +134,10 @@ public class Grid implements Cloneable {
 		return heigth;
 	}
 	
+	public int burningCells(int row) {
+		return burningCellsPerRow[row];
+	}
+	
 	public int burningCells() {
 		return numberOfBurningCells;
 	}
@@ -135,6 +148,10 @@ public class Grid implements Cloneable {
 	
 	public int fireFrontSize() {
 		return fireFront.size();
+	}
+	
+	public int timeToReachBottom() {
+		return timeToReachBottom;
 	}
 	
 	public int time() {

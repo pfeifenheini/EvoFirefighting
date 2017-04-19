@@ -20,6 +20,8 @@ public class Evolution implements Runnable{
 		for(int i=0;i<population.length;i++) {
 			if(strategy.equals("scattered"))
 				population[i] = new ScatteredStrategy();
+			else if(strategy.equals("protect"))
+				population[i] = new ConnectedProtectionStrategy();
 			else
 				population[i] = new ConnectedStrategy();
 		}
@@ -90,7 +92,7 @@ public class Evolution implements Runnable{
 				for(int i=0;i<population.length;i++) {
 					tmp.copy(population[i]);
 					tmp.mutate();
-					if(tmp.fitness()<population[i].fitness()) {
+					if(tmp.compareTo(population[i])<0) {
 						population[i].copy(tmp);
 					}
 				}
