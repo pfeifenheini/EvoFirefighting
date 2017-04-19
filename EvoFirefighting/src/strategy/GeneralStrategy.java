@@ -12,12 +12,13 @@ public abstract class GeneralStrategy implements Strategy {
 	/** random number generator that has to be used for all random processes **/
 	protected static Random rand = new Random();
 	
-	protected static int gridWidth = 151;
-	protected static int gridHeigth = 151;
+	protected static int gridWidth = 301;
+	protected static int gridHeigth = 301;
 	protected static double initialAccount = 2.0;
-	protected static double budget = 1.8;
+	protected static double budget = 1.6;
 	protected static double mutationRate = 2.5;
 	protected static Coordinate startFire  = new Coordinate(gridWidth/2,gridHeigth/2);
+	protected static int simulationTime = gridWidth/2;
 	
 	protected Grid grid;
 	
@@ -43,8 +44,7 @@ public abstract class GeneralStrategy implements Strategy {
 	public boolean spreadStep() {
 		if(finished()) return false;
 		boolean fireStopped = !grid.spreadFire();
-		boolean edgeReached = grid.fireReachedEdge();
-		finished = fireStopped || edgeReached;
+		finished = fireStopped || grid.time()>=simulationTime;
 		return !finished;
 	}
 	
