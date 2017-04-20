@@ -5,39 +5,61 @@ import java.util.Random;
 
 import grid.Coordinate;
 import grid.Grid;
-import strategy.connectedStrategy.ConnectedStrategy;
 
 public abstract class GeneralStrategy implements Strategy {
 
+	public static double defaultInitialAccount = 2.0;
+	public static double defaultBudget = 2.0;
+	public static int defaultSimulationTime = 50;
+	public static double defaultMutationRate = 2.5;
+	
 	/** random number generator that has to be used for all random processes **/
 	protected static Random rand = new Random();
 	
-	protected static int gridWidth = 301;
-	protected static int gridHeigth = 301;
-	protected static double initialAccount = 2.0;
-	protected static double budget = 1.6;
-	protected static double mutationRate = 2.5;
-	protected static Coordinate startFire  = new Coordinate(gridWidth/2,gridHeigth/2);
-	protected static int simulationTime = gridWidth/2;
+	protected double initialAccount = 1.8;
+	protected double budget = 1.8;
+	protected int simulationTime = 50;
+	protected double mutationRate = 2.5;
+	protected Coordinate startFire  = null;
+	
 	
 	protected Grid grid;
 	
 	protected double fitness = -1.0;
 	protected boolean finished = false;
 	
-	public static void setParameters(
-			int gridWidth,
-			int gridHeigth,
+	public GeneralStrategy(
+			int simulationTime,
 			double initialAccount,
 			double budget,
 			double mutationRate,
 			Coordinate startFire) {
-		ConnectedStrategy.gridWidth = gridWidth;
-		ConnectedStrategy.gridHeigth = gridHeigth;
-		ConnectedStrategy.initialAccount = initialAccount;
-		ConnectedStrategy.budget = budget;
-		ConnectedStrategy.mutationRate = mutationRate;
-		ConnectedStrategy.startFire = startFire;
+		if(simulationTime<0)
+			this.simulationTime = defaultSimulationTime;
+		else
+			this.simulationTime = simulationTime;
+		
+		if(initialAccount<0)
+			this.initialAccount = defaultInitialAccount;
+		else
+			this.initialAccount = initialAccount;
+		
+		if(budget<0)
+			this.budget = defaultBudget;
+		else
+			this.budget = budget;
+		
+		if(mutationRate<0)
+			this.mutationRate = defaultMutationRate;
+		else
+			this.mutationRate = mutationRate;
+		
+		if(startFire == null)
+			startFire  = new Coordinate(simulationTime,simulationTime);
+		else
+			this.startFire = startFire;
+		
+		grid = new Grid(2*simulationTime+1,2*simulationTime+1);
 	}
 
 	@Override

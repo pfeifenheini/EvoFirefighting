@@ -2,6 +2,7 @@ package evoFirefighting;
 
 import java.util.Arrays;
 import strategy.Strategy;
+import strategy.connectedStrategy.ConnectedProtectionStrategy;
 import strategy.connectedStrategy.ConnectedStrategy;
 import strategy.scatteredStrategy.ScatteredStrategy;
 
@@ -19,11 +20,11 @@ public class Evolution implements Runnable{
 		population = new Strategy[populationSize];
 		for(int i=0;i<population.length;i++) {
 			if(strategy.equals("scattered"))
-				population[i] = new ScatteredStrategy();
+				population[i] = new ScatteredStrategy(-1,-1,-1,-1,null);
 			else if(strategy.equals("protect"))
-				population[i] = new ConnectedProtectionStrategy();
+				population[i] = new ConnectedProtectionStrategy(-1,-1,-1,-1,null,null);
 			else
-				population[i] = new ConnectedStrategy();
+				population[i] = new ConnectedStrategy(-1,-1,-1,-1,null,null);
 		}
 		Arrays.sort(population);
 	}

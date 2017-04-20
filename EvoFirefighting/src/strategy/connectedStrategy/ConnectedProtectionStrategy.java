@@ -1,10 +1,20 @@
-package evoFirefighting;
+package strategy.connectedStrategy;
 
+import grid.Coordinate;
 import strategy.Strategy;
-import strategy.connectedStrategy.ConnectedStrategy;
 
 public class ConnectedProtectionStrategy extends ConnectedStrategy {
 	
+	public ConnectedProtectionStrategy(
+			int simulationTime,
+			double initialAccount,
+			double budget,
+			double mutationRate,
+			Coordinate startFire,
+			Coordinate startProtection) {
+		super(simulationTime, initialAccount, budget, mutationRate, startFire, startProtection);
+	}
+
 	@Override
 	public double fitness() {
 		while(step());

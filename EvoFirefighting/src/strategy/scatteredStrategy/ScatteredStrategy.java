@@ -7,7 +7,6 @@ import grid.Coordinate;
 import grid.Grid;
 import strategy.GeneralStrategy;
 import strategy.Strategy;
-import strategy.connectedStrategy.ConnectedStrategy;
 
 public class ScatteredStrategy extends GeneralStrategy {
 	
@@ -15,16 +14,21 @@ public class ScatteredStrategy extends GeneralStrategy {
 	
 	private ArrayList<Coordinate> sequence;
 	
-	public ScatteredStrategy() {
-		grid = new Grid(gridWidth,gridHeigth);
-		int sequenceLength = (int)(initialAccount+budget*(gridWidth+gridHeigth));
+	public ScatteredStrategy(
+			int simulationTime,
+			double initialAccount,
+			double budget,
+			double mutationRate,
+			Coordinate startFire) {
+		super(simulationTime, initialAccount, budget, mutationRate, startFire);
+		int sequenceLength = (int)(initialAccount+budget*simulationTime);
 		sequence = new ArrayList<Coordinate>(sequenceLength);
 		int x, y;
 		for(int i=0;i<sequenceLength;i++) {
-			x = (int)(rand.nextGaussian()*gridWidth/10.0+startFire.x);
-			y = (int)(rand.nextGaussian()*gridHeigth/10.0+startFire.y);
-			x = Math.max(0, Math.min(x, gridWidth-1));
-			y = Math.max(0, Math.min(y, gridHeigth-1));
+			x = (int)(rand.nextGaussian()*simulationTime/5.0+startFire.x);
+			y = (int)(rand.nextGaussian()*simulationTime/5.0+startFire.y);
+			x = Math.max(0, Math.min(x, grid.width()-1));
+			y = Math.max(0, Math.min(y, grid.heigth()-1));
 			sequence.add(new Coordinate(x,y));
 		}
 		reset();
@@ -75,8 +79,8 @@ public class ScatteredStrategy extends GeneralStrategy {
 	private void gaussianWiggle(Coordinate c) {
 		int xOffset = (int) (rand.nextGaussian()*5);
 		int yOffset = (int) (rand.nextGaussian()*5);
-		c.x = Math.max(0, Math.min(c.x+xOffset, gridWidth-1));
-		c.y = Math.max(0, Math.min(c.y+yOffset, gridHeigth-1));
+		c.x = Math.max(0, Math.min(c.x+xOffset, grid.width()-1));
+		c.y = Math.max(0, Math.min(c.y+yOffset, grid.heigth()-1));
 	}
 
 	@Override

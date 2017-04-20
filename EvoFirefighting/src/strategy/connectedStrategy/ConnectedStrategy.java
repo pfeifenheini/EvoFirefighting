@@ -18,14 +18,26 @@ public class ConnectedStrategy extends GeneralStrategy {
 	private Coordinate front;
 	private Coordinate back;
 	
-	public ConnectedStrategy() {
-		grid = new Grid(gridWidth,gridHeigth);
-		start = new Coordinate(startFire.x,startFire.y-1);
-		int sequenceLength = (int)(initialAccount+budget*(gridWidth+gridHeigth));
-		sequence = new ArrayList<Extension>(sequenceLength); 
+	public ConnectedStrategy(
+			int simulationTime,
+			double initialAccount,
+			double budget,
+			double mutationRate,
+			Coordinate startFire,
+			Coordinate startProtection) {
+		super(simulationTime, initialAccount, budget, mutationRate, startFire);
+		
+		if(startProtection == null)
+			start = new Coordinate(startFire.x,startFire.y-1);
+		else
+			startFire = startProtection;
+		
+		int sequenceLength = (int)(initialAccount+budget*simulationTime);
+		sequence = new ArrayList<Extension>(sequenceLength);
 		for(int i=0;i<sequenceLength;i++) {
 			sequence.add(new Extension(rand));
 		}
+		
 		reset();
 	}
 
@@ -43,11 +55,16 @@ public class ConnectedStrategy extends GeneralStrategy {
 			account -= 1.0;
 			success = true;
 		}
+		
+//		boolean extendFront = grid.time()%2==0;
+		
 		while(it.hasNext() && account >= 1.0) {
 			e = it.next();
 			dir = e.dir;
-			if(e.extendFront)
+			if(e.extendFront) {
 				end = front;
+//				dir = Direction.NE;
+			}
 			else
 				end = back;
 			
@@ -67,6 +84,7 @@ public class ConnectedStrategy extends GeneralStrategy {
 				else
 					dir = dir.nextCCW();
 			}
+//			extendFront = false;
 		}
 		
 		return success;
