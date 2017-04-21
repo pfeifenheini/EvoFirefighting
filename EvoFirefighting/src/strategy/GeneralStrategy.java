@@ -3,6 +3,7 @@ package strategy;
 
 import java.util.Random;
 
+import grid.Coordinate;
 import grid.Grid;
 
 /**
@@ -24,6 +25,8 @@ public abstract class GeneralStrategy implements Strategy {
 	protected int simulationTime = 50;
 	/** A higher mutation rate increases the cahnce for changes during the mutation step */
 	protected double mutationRate = 2.5;
+	/** coordinate where the fire starts */
+	protected Coordinate startFire = null;
 	
 	/** The grid that is used for the simulation of the strategy. */
 	protected Grid grid;
@@ -55,6 +58,8 @@ public abstract class GeneralStrategy implements Strategy {
 			this.mutationRate = mutationRate;
 		
 		grid = new Grid(2*this.simulationTime+1,2*this.simulationTime+1);
+		
+		startFire = new Coordinate(this.simulationTime,this.simulationTime);
 	}
 
 	@Override
@@ -96,7 +101,7 @@ public abstract class GeneralStrategy implements Strategy {
 	@Override
 	public void reset() {
 		grid.reset();
-		grid.ignite(grid.width()/2, grid.height()/2);
+		grid.ignite(startFire.x, startFire.y);
 		finished = false;
 	}
 

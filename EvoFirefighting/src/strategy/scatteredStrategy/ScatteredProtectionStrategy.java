@@ -28,11 +28,13 @@ public class ScatteredProtectionStrategy extends ScatteredStrategy {
 			int highwayDistance) {
 		super(simulationTime, initialAccount, budget, mutationRate);
 		this.highwayDistance = highwayDistance;
-		grid = new Grid(2*this.simulationTime+1,2*this.highwayDistance+1);
+		grid = new Grid(2*this.simulationTime+1,this.simulationTime+this.highwayDistance+1);
+		startFire = new Coordinate(this.simulationTime,this.highwayDistance);
+		
 		int x, y;
 		for(int i=0;i<sequence.size();i++) {
-			x = (int)(rand.nextGaussian()*grid.width()/10.0+grid.width()/2);
-			y = (int)(rand.nextGaussian()*grid.height()/10.0+grid.height()/2);
+			x = (int)(rand.nextGaussian()*grid.width()/10.0+startFire.x);
+			y = (int)(rand.nextGaussian()*this.highwayDistance/5.0+startFire.y);
 			x = Math.max(0, Math.min(x, grid.width()-1));
 			y = Math.max(0, Math.min(y, grid.height()-1));
 			sequence.set(i,new Coordinate(x,y));

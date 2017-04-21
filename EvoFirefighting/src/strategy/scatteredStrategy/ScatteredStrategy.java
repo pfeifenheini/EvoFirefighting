@@ -79,11 +79,11 @@ public class ScatteredStrategy extends GeneralStrategy {
 			}
 		}
 		
-		Coordinate fireStart = new Coordinate(grid.width()/2,grid.height()/2);
+		//sort coordinates by distance to fire origin
 		Collections.sort(sequence, new Comparator<Coordinate>() {
 			@Override
 			public int compare(Coordinate arg0, Coordinate arg1) {
-				return Math.abs(arg0.x-fireStart.x)+Math.abs(arg0.y-fireStart.y)-Math.abs(arg1.x-fireStart.x)-Math.abs(arg1.y-fireStart.y);
+				return Math.abs(arg0.x-startFire.x)+Math.abs(arg0.y-startFire.y)-Math.abs(arg1.x-startFire.x)-Math.abs(arg1.y-startFire.y);
 			}
 			
 		});

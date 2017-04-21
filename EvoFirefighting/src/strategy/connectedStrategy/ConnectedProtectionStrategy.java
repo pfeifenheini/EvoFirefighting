@@ -28,12 +28,15 @@ public class ConnectedProtectionStrategy extends ConnectedStrategy {
 			int highwayDistance) {
 		super(simulationTime, initialAccount, budget, mutationRate, startOffset);
 		this.highwayDistance = highwayDistance;
-		grid = new Grid(2*this.simulationTime+1,2*this.highwayDistance+1);
+		grid = new Grid(2*this.simulationTime+1,this.simulationTime+this.highwayDistance+1);
+		startFire = new Coordinate(this.simulationTime,this.highwayDistance);
 		
-		if(startOffset != null)
-			start = new Coordinate(
-					Math.max(0, Math.min(grid.width()/2+startOffset.x, grid.width()-1)),
-					Math.max(0, Math.min(grid.height()/2+startOffset.y, grid.height()-1)));
+		if(startOffset == null)
+			startOffset = new Coordinate(0, 0);
+			
+		start = new Coordinate(
+				Math.max(0, Math.min(startFire.x+startOffset.x, grid.width()-1)),
+				Math.max(0, Math.min(startFire.y+startOffset.y, grid.height()-1)));
 		
 		reset();
 	}
