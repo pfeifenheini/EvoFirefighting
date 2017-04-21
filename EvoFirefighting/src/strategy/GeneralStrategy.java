@@ -3,6 +3,7 @@ package strategy;
 
 import java.util.Random;
 
+import evoFirefighting.Parameter;
 import grid.Coordinate;
 import grid.Grid;
 
@@ -18,13 +19,13 @@ public abstract class GeneralStrategy implements Strategy {
 	protected static Random rand = new Random();
 	
 	/** Initial account, defines the number of cells that can be protected in the first step. */
-	protected double initialAccount = 2.0;
+	protected double initialAccount = (double)Parameter.initialAccount.getDefaultValue();
 	/** Defines how many cells can be protected at each step */
-	protected double budget = 2.0;
+	protected double budget = (double)Parameter.budget.getDefaultValue();
 	/** Number of steps the strategy is simulated before determining its fitness. */
-	protected int simulationTime = 50;
-	/** A higher mutation rate increases the cahnce for changes during the mutation step */
-	protected double mutationRate = 2.5;
+	protected int simulationTime = (int)Parameter.simulationTime.getDefaultValue();
+	/** A higher mutation rate increases the chance for changes during the mutation step */
+	protected double mutationRate = (double)Parameter.mutationRate.getDefaultValue();
 	/** coordinate where the fire starts */
 	protected Coordinate startFire = null;
 	

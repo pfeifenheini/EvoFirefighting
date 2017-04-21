@@ -43,4 +43,9 @@ public class Coordinate implements Cloneable {
 		}
 		return c;
 	}
+	
+	@Override
+	public String toString() {
+		return "(" + x + "," + y + ")";
+	}
 }

@@ -41,19 +41,19 @@ public class Evolution implements Runnable{
 			Mode mode,
 			Properties parameters) {
 		if(parameters==null) parameters=new Properties();
-		simulationTime = Integer.parseInt(parameters.getProperty("simulationTime", "-1"));
-		double initialAccount = Double.parseDouble(parameters.getProperty("initialAccount", "-1").replaceAll(",", "."));
-		double budget = Double.parseDouble(parameters.getProperty("budget", "-1").replaceAll(",", "."));
-		double mutationRate = Double.parseDouble(parameters.getProperty("mutationRate", "-1").replaceAll(",", "."));
+		simulationTime = Integer.parseInt(parameters.getProperty(Parameter.simulationTime.name(), Parameter.simulationTime.getDefaultValueString()));
+		double initialAccount = Double.parseDouble(parameters.getProperty(Parameter.initialAccount.name(), Parameter.initialAccount.getDefaultValueString()).replaceAll(",", "."));
+		double budget = Double.parseDouble(parameters.getProperty(Parameter.budget.name(), Parameter.budget.getDefaultValueString()).replaceAll(",", "."));
+		double mutationRate = Double.parseDouble(parameters.getProperty(Parameter.mutationRate.name(), Parameter.mutationRate.getDefaultValueString()).replaceAll(",", "."));
 		
-		Coordinate startOffset = parseCoordinate(parameters.getProperty("startOffset","(0,0)"));
+		Coordinate startOffset = parseCoordinate(parameters.getProperty(Parameter.startOffset.name(),Parameter.startOffset.getDefaultValueString()));
 		if(startOffset.x == 0 && startOffset.y == 0)
 			startOffset = null;
 		
-		int highwayDistance = Integer.parseInt(parameters.getProperty("highwayDistance", "-1"));
+		int highwayDistance = Integer.parseInt(parameters.getProperty(Parameter.highwayDistance.name(), Parameter.highwayDistance.getDefaultValueString()));
 		
 		
-		population = new Strategy[Integer.parseInt(parameters.getProperty("populationSize","20"))];
+		population = new Strategy[Integer.parseInt(parameters.getProperty(Parameter.populationSize.name(),Parameter.populationSize.getDefaultValueString()))];
 		for(int i=0;i<population.length;i++) {
 			if(mode == Mode.EncloseScattered)
 				population[i] = new ScatteredStrategy(simulationTime,initialAccount,budget,mutationRate);

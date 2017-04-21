@@ -112,16 +112,6 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	/** Evolution algorithm currently running */
 	private Evolution evolution = null;
 	
-	/** List of possible parameters. */
-	private String[] keyList = {
-			"populationSize",
-			"simulationTime",
-			"initialBudget",
-			"budget",
-			"mutationRate",
-			"startOffset",
-			"highwayDistance",
-			};
 	/** Used for the parameters of an evolution */
 	private Properties parameters = new Properties();
 	
@@ -143,13 +133,9 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	 */
 	public EvoFirefighting() {
 		
-		parameters.setProperty("populationSize", "20");
-		parameters.setProperty("simulationTime", "50");
-		parameters.setProperty("initialBudget", "2.0");
-		parameters.setProperty("budget", "2.0");
-		parameters.setProperty("mutationRate", "2.5");
-		parameters.setProperty("startOffset", "(0,-1)");
-		parameters.setProperty("highwayDistance", "20");
+		Parameter[] parameterList = Parameter.values();
+		for(int i=0;i<parameterList.length;i++)
+			parameters.setProperty(parameterList[i].name(),parameterList[i].getDefaultValueString());
 		
 		this.setTitle("Evolutionary Firefighting");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -239,24 +225,35 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			}
 		}
 		if(e.getSource() == settings) {
-			String key = (String)JOptionPane.showInputDialog(
-					this,
-					"please type the key you want to change",
-					"key",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					keyList,
-					"key");
-			if(key!=null) {
-				String value = parameters.getProperty(key, "default");
-				value = (String)JOptionPane.showInputDialog(
+			
+			String key;
+			try {
+				key = ((Parameter)JOptionPane.showInputDialog(
 						this,
-						"Please type the new value for \"" + key + "\"",
-						"value",
+						"please type the key you want to change",
+						"key",
 						JOptionPane.PLAIN_MESSAGE,
 						null,
-						null,
-						value);
+						Parameter.values(),
+						"key")).name();
+			} catch (NullPointerException ex) {
+				key = null;
+			}
+			if(key!=null) {
+				String value = parameters.getProperty(key);
+				try {
+					value = (String)JOptionPane.showInputDialog(
+							this,
+							"Please type the new value for \"" + key + "\"",
+							"value",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							null,
+							value);
+				} catch(NullPointerException ex) {
+					value = null;
+				}
+				
 				if(value!=null)
 					parameters.setProperty(key, value);
 			}
@@ -335,13 +332,13 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	 */
 	private void updateParametersInfo() {
 		addInfoText("--- Parameters ---");
-		addInfoText("initialBudget: " + parameters.getProperty("initialBudget").replaceAll(",", "."));
-		addInfoText("budget: " + parameters.getProperty("budget").replaceAll(",", "."));
-		addInfoText("mutationRate: " + parameters.getProperty("mutationRate").replaceAll(",", "."));
+		addInfoText(Parameter.initialAccount.name() + ": " + parameters.getProperty(Parameter.initialAccount.name()).replaceAll(",", "."));
+		addInfoText(Parameter.budget.name() + ": " + parameters.getProperty(Parameter.budget.name()).replaceAll(",", "."));
+		addInfoText(Parameter.mutationRate.name() + ": " + parameters.getProperty(Parameter.mutationRate.name()).replaceAll(",", "."));
 		if(strategyToAnimate instanceof ConnectedProtectionStrategy)
-			addInfoText("startOffset: " + parameters.getProperty("startOffset"));
+			addInfoText(Parameter.startOffset.name() + ": " + parameters.getProperty(Parameter.startOffset.name()));
 		if(strategyToAnimate instanceof ConnectedProtectionStrategy)
-			addInfoText("highwayDistance: " + parameters.getProperty("highwayDistance"));
+			addInfoText(Parameter.highwayDistance.name() + ": " + parameters.getProperty(Parameter.highwayDistance.name()));
 	}
 
 	/**
@@ -351,8 +348,8 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		if(evolution==null) return;
 		addInfoText("--- Evolution ---");
 		addInfoText("generation: " + evolution.generation());
-		addInfoText("population size: " + evolution.populationSize());
-		addInfoText("simulation Time: " + evolution.simulationTime());
+		addInfoText(Parameter.populationSize.name() + ": " + evolution.populationSize());
+		addInfoText(Parameter.simulationTime.name() + ": " + evolution.simulationTime());
 	}
 	
 	/**
