@@ -20,7 +20,7 @@ public abstract class GeneralStrategy implements Strategy {
 	protected double budget = 2.0;
 	protected int simulationTime = 50;
 	protected double mutationRate = 2.5;
-	protected Coordinate startFire = null;
+//	protected Coordinate startFire = null;
 	
 	
 	protected Grid grid;
@@ -42,7 +42,7 @@ public abstract class GeneralStrategy implements Strategy {
 		if(mutationRate>=0)
 			this.mutationRate = mutationRate;
 		
-		startFire  = new Coordinate(this.simulationTime,this.simulationTime);
+//		startFire  = new Coordinate(this.simulationTime,this.simulationTime);
 		grid = new Grid(2*this.simulationTime+1,2*this.simulationTime+1);
 	}
 
@@ -84,7 +84,7 @@ public abstract class GeneralStrategy implements Strategy {
 	@Override
 	public void reset() {
 		grid.reset();
-		grid.ignite(startFire.x, startFire.y);
+		grid.ignite(grid.width()/2, grid.heigth()/2);
 		finished = false;
 	}
 

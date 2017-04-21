@@ -24,8 +24,8 @@ public class ScatteredStrategy extends GeneralStrategy {
 		sequence = new ArrayList<Coordinate>(sequenceLength);
 		int x, y;
 		for(int i=0;i<sequenceLength;i++) {
-			x = (int)(rand.nextGaussian()*this.simulationTime/5.0+startFire.x);
-			y = (int)(rand.nextGaussian()*this.simulationTime/5.0+startFire.y);
+			x = (int)(rand.nextGaussian()*this.simulationTime/5.0+grid.width()/2);
+			y = (int)(rand.nextGaussian()*this.simulationTime/5.0+grid.heigth()/2);
 			x = Math.max(0, Math.min(x, grid.width()-1));
 			y = Math.max(0, Math.min(y, grid.heigth()-1));
 			sequence.add(new Coordinate(x,y));

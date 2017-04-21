@@ -27,11 +27,11 @@ public class ConnectedStrategy extends GeneralStrategy {
 		super(simulationTime, initialAccount, budget, mutationRate);
 		
 		if(startOffset == null)
-			start = new Coordinate(startFire.x,startFire.y-1);
+			start = new Coordinate(grid.width()/2,grid.heigth()/2-1);
 		else
 			start = new Coordinate(
-					Math.max(0, Math.min(startFire.x+startOffset.x, grid.width()-1)),
-					Math.max(0, Math.min(startFire.y+startOffset.y, grid.heigth()-1)));
+					Math.max(0, Math.min(grid.width()/2+startOffset.x, grid.width()-1)),
+					Math.max(0, Math.min(grid.heigth()/2+startOffset.y, grid.heigth()-1)));
 		
 		int sequenceLength = (int)(this.initialAccount+this.budget*this.simulationTime);
 		sequence = new ArrayList<Extension>(sequenceLength);
@@ -48,7 +48,7 @@ public class ConnectedStrategy extends GeneralStrategy {
 		Extension e;
 		Direction dir;
 		Coordinate end, neighbor;
-		boolean success = false;
+		boolean success = false, extendFront;
 		double account = initialAccount + grid.time()*budget - grid.protectedCells();
 		
 		if(grid.state(start.x, start.y) == State.Free && account >= 1.0) {
@@ -57,12 +57,13 @@ public class ConnectedStrategy extends GeneralStrategy {
 			success = true;
 		}
 		
-//		boolean extendFront = grid.time()%2==0;
+//		extendFront = grid.time()%2==0;
 		
 		while(it.hasNext() && account >= 1.0) {
 			e = it.next();
 			dir = e.dir;
-			if(e.extendFront) {
+			extendFront = e.extendFront;
+			if(extendFront) {
 				end = front;
 //				dir = Direction.NE;
 			}
@@ -74,13 +75,13 @@ public class ConnectedStrategy extends GeneralStrategy {
 				if(grid.protect(neighbor.x, neighbor.y)) {
 					account -= 1.0;
 					success = true;
-					if(e.extendFront)
+					if(extendFront)
 						front = neighbor;
 					else
 						back = neighbor;
 					break;
 				}
-				if(e.extendFront)
+				if(extendFront)
 					dir = dir.nextCW();
 				else
 					dir = dir.nextCCW();

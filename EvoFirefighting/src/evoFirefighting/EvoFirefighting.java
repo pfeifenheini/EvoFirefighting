@@ -219,7 +219,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		}
 		if(e.getSource() == decreaseAnimationSpeed) {
 			animationTimer.setDelay((int)(animationTimer.getDelay()*2.0));
-			animationTimer.setInitialDelay(0);
+			animationTimer.setInitialDelay((int)(animationTimer.getDelay()*2.0));
 			animationTimer.restart();
 		}
 		if(e.getSource() == animate) {
