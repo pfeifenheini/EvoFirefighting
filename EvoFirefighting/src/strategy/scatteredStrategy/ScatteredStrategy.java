@@ -2,6 +2,8 @@ package strategy.scatteredStrategy;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.ListIterator;
 import grid.Coordinate;
 import grid.Grid;
@@ -10,9 +12,9 @@ import strategy.Strategy;
 
 public class ScatteredStrategy extends GeneralStrategy {
 	
-	private ListIterator<Coordinate> it;
+	protected ListIterator<Coordinate> it;
 	
-	private ArrayList<Coordinate> sequence;
+	protected ArrayList<Coordinate> sequence;
 	
 	public ScatteredStrategy(
 			int simulationTime,
@@ -24,8 +26,8 @@ public class ScatteredStrategy extends GeneralStrategy {
 		sequence = new ArrayList<Coordinate>(sequenceLength);
 		int x, y;
 		for(int i=0;i<sequenceLength;i++) {
-			x = (int)(rand.nextGaussian()*this.simulationTime/5.0+grid.width()/2);
-			y = (int)(rand.nextGaussian()*this.simulationTime/5.0+grid.heigth()/2);
+			x = (int)(rand.nextGaussian()*grid.width()/10.0+grid.width()/2);
+			y = (int)(rand.nextGaussian()*grid.heigth()/10.0+grid.heigth()/2);
 			x = Math.max(0, Math.min(x, grid.width()-1));
 			y = Math.max(0, Math.min(y, grid.heigth()-1));
 			sequence.add(new Coordinate(x,y));
@@ -62,13 +64,27 @@ public class ScatteredStrategy extends GeneralStrategy {
 		boolean changed = false;
 		for(int i=0;i<sequence.size();i++) {
 			if(rand.nextDouble()<mutationRate/sequence.size()) {
-//				sequence.set(i, new Coordinate(rand.nextInt(gridWidth),rand.nextInt(gridHeigth)));
-				gaussianWiggle(sequence.get(i));
+//				if(rand.nextBoolean())
+					gaussianWiggle(sequence.get(i));
+//				else
+//					Collections.swap(sequence, i, rand.nextInt(sequence.size()));
 				changed = true;
 			}
 		}
+		
+		Coordinate fireStart = new Coordinate(grid.width()/2,grid.heigth()/2);
+		Collections.sort(sequence, new Comparator<Coordinate>() {
+			@Override
+			public int compare(Coordinate arg0, Coordinate arg1) {
+				return Math.abs(arg0.x-fireStart.x)+Math.abs(arg0.y-fireStart.y)-Math.abs(arg1.x-fireStart.x)-Math.abs(arg1.y-fireStart.y);
+			}
+			
+		});
+		
 		if(changed)
 			fitness = -1;
+		
+		reset();
 	}
 	
 	/**

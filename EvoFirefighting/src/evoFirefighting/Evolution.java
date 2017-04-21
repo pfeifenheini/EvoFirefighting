@@ -7,6 +7,7 @@ import grid.Coordinate;
 import strategy.Strategy;
 import strategy.connectedStrategy.ConnectedProtectionStrategy;
 import strategy.connectedStrategy.ConnectedStrategy;
+import strategy.scatteredStrategy.ScatteredProtectionStrategy;
 import strategy.scatteredStrategy.ScatteredStrategy;
 
 public class Evolution implements Runnable{
@@ -21,7 +22,7 @@ public class Evolution implements Runnable{
 	private int simulationTime = 0;
 	
 	public Evolution(
-			String strategy,
+			Mode mode,
 			Properties parameters) {
 		if(parameters==null) parameters=new Properties();
 		simulationTime = Integer.parseInt(parameters.getProperty("simulationTime", "-1"));
@@ -38,11 +39,13 @@ public class Evolution implements Runnable{
 		
 		population = new Strategy[Integer.parseInt(parameters.getProperty("populationSize","20"))];
 		for(int i=0;i<population.length;i++) {
-			if(strategy.equals("scattered"))
+			if(mode == Mode.EncloseScattered)
 				population[i] = new ScatteredStrategy(simulationTime,initialAccount,budget,mutationRate);
-			else if(strategy.equals("protect"))
+			else if(mode == Mode.ProtectConnected)
 				population[i] = new ConnectedProtectionStrategy(simulationTime,initialAccount,budget,mutationRate,startOffset,highwayDistance);
-			else
+			else if(mode == Mode.ProtectScattered)
+				population[i] = new ScatteredProtectionStrategy(simulationTime,initialAccount,budget,mutationRate,highwayDistance);
+			else //default EncloseConnected
 				population[i] = new ConnectedStrategy(simulationTime,initialAccount,budget,mutationRate,startOffset);
 		}
 		Arrays.sort(population);

@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -39,10 +40,10 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	
 	private JButton settings = 
 			new JButton("settings");
-	
-	private final String[] strategyChoices = {"connected", "scattered", "protect"}; 
+	 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private JComboBox<String> strategyChoice =
-			new JComboBox<String>(strategyChoices);
+			new JComboBox<String>(new DefaultComboBoxModel(Mode.values()));
 	
 	private JButton decreaseAnimationSpeed =
 			new JButton("<<");
@@ -238,7 +239,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 				evolution.stopEvolution();
 			}
 			
-			evolution = new Evolution((String)strategyChoice.getSelectedItem(), parameters);
+			evolution = new Evolution(Mode.values()[strategyChoice.getSelectedIndex()], parameters);
 			evolution.startEvolution();
 			
 			strategyToAnimate = null;
@@ -346,7 +347,6 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
