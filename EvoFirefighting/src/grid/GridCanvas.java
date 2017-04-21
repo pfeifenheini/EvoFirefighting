@@ -15,7 +15,7 @@ public class GridCanvas extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public static final int REFRESH_RATE = 30;
+	public static final int REFRESH_RATE = 1;
 	public static final int DEFAULT_PIXEL_SIZE = 5;
 	public static final int DEFAULT_WIDTH = 101;
 	public static final int DEFAULT_HEIGTH = 101;
@@ -25,21 +25,20 @@ public class GridCanvas extends JPanel {
 	private int width = DEFAULT_WIDTH;
 	private int height = DEFAULT_HEIGTH;
 	
-	private Grid grid;
+	private Grid grid = null;
 	
-	private Timer refreshTimer;
+	private Timer refreshTimer= new Timer(
+			1000/REFRESH_RATE,
+			new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					repaint();
+				}
+			});
 	
 	public GridCanvas() {
-		loadGrid(new Grid(width,height));
+//		loadGrid(new Grid(width,height));
 		
-		refreshTimer = new Timer(
-				1000/REFRESH_RATE,
-				new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						repaint();
-					}
-				});
 		refreshTimer.start();
 		
 		setBackground(Color.WHITE);
@@ -58,39 +57,46 @@ public class GridCanvas extends JPanel {
 		}
 	}
 	
+	public Grid getGrid() {
+		return grid;
+	}
+	
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 		
-		synchronized(this) {
-			// paint cells
-			for(int x=0;x<width;x++) {
-				for(int y=0;y<height;y++) {
-					switch (grid.state(x, y)) {
-					case Burning:
-						g.setColor(Color.RED);
-						break;
-					case Free:
-						g.setColor(Color.WHITE);
-						break;
-					case Protected:
-						g.setColor(Color.BLACK);
-						break;
+		if(grid != null) {
+			synchronized(this) {
+				// paint cells
+				for(int x=0;x<width;x++) {
+					for(int y=0;y<height;y++) {
+						switch (grid.state(x, y)) {
+						case Burning:
+							g.setColor(Color.RED);
+							break;
+						case Free:
+							g.setColor(Color.WHITE);
+							break;
+						case Protected:
+							g.setColor(Color.BLACK);
+							break;
+						}
+						g.fillRect(x*pixelSize, (height-y-1)*pixelSize, pixelSize, pixelSize);
 					}
-					g.fillRect(x*pixelSize, (height-y-1)*pixelSize, pixelSize, pixelSize);
 				}
 			}
-		}
-		// paint raster
-		if(pixelSize>=4) {
-			g.setColor(Color.lightGray);
-			for(int x=0;x<width;x++) {
-				for(int y=0;y<height;y++) {
-					g.drawRect(x*pixelSize, (height-y-1)*pixelSize, pixelSize, pixelSize);
+			// paint raster
+			if(pixelSize>=4) {
+				g.setColor(Color.lightGray);
+				for(int x=0;x<width;x++) {
+					for(int y=0;y<height;y++) {
+						g.drawRect(x*pixelSize, (height-y-1)*pixelSize, pixelSize, pixelSize);
+					}
 				}
 			}
 		}
 	}
+	
 
 	public int getPixelSize() {
 		return pixelSize;
@@ -99,6 +105,6 @@ public class GridCanvas extends JPanel {
 	public void setPixelSize(int pixelSize) {
 		this.pixelSize = pixelSize;
 		setPreferredSize(new Dimension(pixelSize*width,pixelSize*height));
-		repaint();
+//		repaint();
 	}
 }

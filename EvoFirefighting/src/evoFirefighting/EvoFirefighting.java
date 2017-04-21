@@ -19,7 +19,6 @@ import grid.Grid;
 import grid.GridCanvas;
 import strategy.Strategy;
 import strategy.connectedStrategy.ConnectedProtectionStrategy;
-import strategy.connectedStrategy.ConnectedStrategy;
 
 public class EvoFirefighting extends JFrame implements ActionListener {
 
@@ -115,10 +114,8 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		});
 	}
 	
-
-	
-	Strategy best = new ConnectedStrategy(-1,-1,-1,-1,null);
-	Strategy clone = null;
+//	private Strategy best = new ConnectedStrategy(-1,-1,-1,-1,null);
+//	private Strategy clone = null;
 	
 	public EvoFirefighting() {
 		
@@ -176,6 +173,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		decreaseOffset.addActionListener(this);
 		increaseOffset.addActionListener(this);
 		
+		loadGrid(new Grid(GridCanvas.DEFAULT_WIDTH,GridCanvas.DEFAULT_HEIGTH));
 		pack();
 	}
 
@@ -270,15 +268,16 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		repaint();
 	}
 	
-	private void updateInfo(Grid g) {
+	private void updateInfo() {
 		infoPane.removeAll();
 		
 		updateParametersInfo();
 		updateEvolutionInfo();
 		updateStrategyInfo();
-		updateGridInfo(g);
+		updateGridInfo(canvas.getGrid());
 
-		pack();
+//		pack();
+		infoPane.validate();
 		infoPane.repaint();
 	}
 	
@@ -310,19 +309,21 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	}
 	
 	private void updateGridInfo(Grid g) {
-		addInfoText("--- Grid ---");
-		addInfoText("width: " + g.width());
-		addInfoText("heigth: " + g.heigth());
-		addInfoText("burning: " + g.burningCells());
-		addInfoText("protected: " + g.protectedCells());
-		if(evolution!=null)
-			addInfoText("time: " + g.time() + "/" + evolution.simulationTime());
-		else
-			addInfoText("time: " + g.time());
-		if(g.timeBottomReached() == Integer.MAX_VALUE)
-			addInfoText("BottomReached at: inf");
-		else
-			addInfoText("BottomReached at: " + g.timeBottomReached());
+		if(g != null) {
+			addInfoText("--- Grid ---");
+			addInfoText("width: " + g.width());
+			addInfoText("heigth: " + g.heigth());
+			addInfoText("burning: " + g.burningCells());
+			addInfoText("protected: " + g.protectedCells());
+			if(evolution!=null)
+				addInfoText("time: " + g.time() + "/" + evolution.simulationTime());
+			else
+				addInfoText("time: " + g.time());
+			if(g.timeBottomReached() == Integer.MAX_VALUE)
+				addInfoText("BottomReached at: inf");
+			else
+				addInfoText("BottomReached at: " + g.timeBottomReached());
+		}
 	}
 	
 	private void addInfoText(String s) {
@@ -373,7 +374,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	
 	private void loadGrid(Grid g) {
 		canvas.loadGrid(g);
-		updateInfo(g);
+		updateInfo();
 	}
 	
 	public void stopAnimation() {

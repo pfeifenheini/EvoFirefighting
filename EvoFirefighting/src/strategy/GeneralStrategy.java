@@ -3,7 +3,6 @@ package strategy;
 
 import java.util.Random;
 
-import grid.Coordinate;
 import grid.Grid;
 
 public abstract class GeneralStrategy implements Strategy {
