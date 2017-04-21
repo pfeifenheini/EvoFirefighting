@@ -4,11 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Properties;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
@@ -16,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 import grid.Grid;
 import grid.GridCanvas;
 import strategy.Strategy;
+import strategy.connectedStrategy.ConnectedProtectionStrategy;
 import strategy.connectedStrategy.ConnectedStrategy;
 
 public class EvoFirefighting extends JFrame implements ActionListener {
@@ -35,6 +38,9 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	private JButton zoomOut =
 			new JButton("-");
 	
+	private JButton settings = 
+			new JButton("settings");
+	
 	private final String[] strategyChoices = {"connected", "scattered", "protect"}; 
 	private JComboBox<String> strategyChoice =
 			new JComboBox<String>(strategyChoices);
@@ -45,7 +51,6 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			new JButton("animate");
 	private JButton increaseAnimationSpeed =
 			new JButton(">>");
-
 	
 	private JButton startEvolution =
 			new JButton("(re)start evolution");
@@ -56,6 +61,8 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			new JLabel("1");
 	private JButton increaseOffset = 
 			new JButton("+");
+	
+
 	
 	
 	private static final int DEFAULT_ANIMATION_DELAY = 500;
@@ -70,7 +77,34 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			});
 	private Strategy strategyToAnimate = null;
 	
+	private Timer refreshTimer = new Timer(
+			500,
+			new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(!isAnimating()) {
+						if(strategyToAnimate == null)
+							strategyToAnimate = evolution.cloneBestStrategy(offset);
+						else
+							evolution.copyBestStrategy(strategyToAnimate, offset);
+						while(strategyToAnimate.step());
+						loadGrid(strategyToAnimate.cloneGrid());
+					}
+				}
+			});
+	
 	private Evolution evolution = null;
+	
+	private String[] keyList = {
+			"populationSize",
+			"simulationTime",
+			"initialBudget",
+			"budget",
+			"mutationRate",
+			"startOffset",
+			"highwayDistance",
+			};
+	private Properties parameters = new Properties();
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -81,10 +115,21 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		});
 	}
 	
-	Strategy best = new ConnectedStrategy(-1,-1,-1,-1,null,null);
+
+	
+	Strategy best = new ConnectedStrategy(-1,-1,-1,-1,null);
 	Strategy clone = null;
 	
 	public EvoFirefighting() {
+		
+		parameters.setProperty("populationSize", "20");
+		parameters.setProperty("simulationTime", "50");
+		parameters.setProperty("initialBudget", "2.0");
+		parameters.setProperty("budget", "2.0");
+		parameters.setProperty("mutationRate", "2.5");
+		parameters.setProperty("startOffset", "(0,-1)");
+		parameters.setProperty("highwayDistance", "20");
+		
 		this.setTitle("Evolutionary Firefighting");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -106,6 +151,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		topPane.add(new JLabel("Zoom: "));
 		topPane.add(zoomOut);
 		topPane.add(zoomIn);
+		topPane.add(settings);
 		contentPane.add(topPane,BorderLayout.PAGE_START);
 		
 		bottomPane = new JPanel();
@@ -121,6 +167,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		
 		zoomIn.addActionListener(this);
 		zoomOut.addActionListener(this);
+		settings.addActionListener(this);
 		strategyChoice.addActionListener(this);
 		decreaseAnimationSpeed.addActionListener(this);
 		animate.addActionListener(this);
@@ -147,6 +194,29 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 				pack();
 			}
 		}
+		if(e.getSource() == settings) {
+			String key = (String)JOptionPane.showInputDialog(
+					this,
+					"please type the key you want to change",
+					"key",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					keyList,
+					"key");
+			if(key!=null) {
+				String value = parameters.getProperty(key, "default");
+				value = (String)JOptionPane.showInputDialog(
+						this,
+						"Please type the new value for \"" + key + "\"",
+						"value",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						null,
+						value);
+				if(value!=null)
+					parameters.setProperty(key, value);
+			}
+		}
 		if(e.getSource() == decreaseAnimationSpeed) {
 			animationTimer.setDelay((int)(animationTimer.getDelay()*2.0));
 			animationTimer.setInitialDelay(0);
@@ -164,34 +234,18 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			animationTimer.restart();
 		}
 		if(e.getSource() == startEvolution) {
+			refreshTimer.stop();
+			
 			if(evolution != null) {
 				evolution.stopEvolution();
 			}
-			evolution = new Evolution(50,(String)strategyChoice.getSelectedItem());
+			
+			evolution = new Evolution((String)strategyChoice.getSelectedItem(), parameters);
 			evolution.startEvolution();
 			
 			strategyToAnimate = null;
 			
-			Timer t = new Timer(
-					500,
-					new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							if(!isAnimating()) {
-								if(strategyToAnimate == null)
-									strategyToAnimate = evolution.cloneBestStrategy(offset);
-								else
-									evolution.copyBestStrategy(strategyToAnimate, offset);
-								while(strategyToAnimate.step());
-								Grid g = strategyToAnimate.cloneGrid();
-								loadGrid(g);
-								System.out.println("Generation: " + evolution.generation());
-								System.out.println("Fitness: " + strategyToAnimate.fitness());
-							}
-						}
-					});
-			
-			t.start();
+			refreshTimer.start();
 		}
 		if(e.getSource() == decreaseOffset) {
 			if((e.getModifiers() & ActionEvent.ALT_MASK) != 0)
@@ -219,12 +273,56 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	private void updateInfo(Grid g) {
 		infoPane.removeAll();
 		
+		updateParametersInfo();
+		updateEvolutionInfo();
+		updateStrategyInfo();
+		updateGridInfo(g);
+
+		pack();
+		infoPane.repaint();
+	}
+	
+	private void updateParametersInfo() {
+		addInfoText("--- Parameters ---");
+		addInfoText("initialBudget: " + parameters.getProperty("initialBudget"));
+		addInfoText("budget: " + parameters.getProperty("budget"));
+		addInfoText("mutationRate: " + parameters.getProperty("mutationRate"));
+		if(strategyToAnimate instanceof ConnectedProtectionStrategy)
+			addInfoText("startOffset: " + parameters.getProperty("startOffset"));
+		if(strategyToAnimate instanceof ConnectedProtectionStrategy)
+			addInfoText("highwayDistance: " + parameters.getProperty("highwayDistance"));
+	}
+
+	private void updateEvolutionInfo() {
+		if(evolution==null) return;
+		addInfoText("--- Evolution ---");
+		addInfoText("generation: " + evolution.generation());
+		addInfoText("population size: " + evolution.populationSize());
+		addInfoText("simulation Time: " + evolution.simulationTime());
+	}
+	
+	private void updateStrategyInfo() {
+		if(strategyToAnimate==null) return;
+		addInfoText("--- Strategy ---");
+		if(evolution!=null)
+			addInfoText("individual: " + (offset+1) + "/" + evolution.populationSize());
+		addInfoText("fitness: " + strategyToAnimate.fitness());
+	}
+	
+	private void updateGridInfo(Grid g) {
+		addInfoText("--- Grid ---");
 		addInfoText("width: " + g.width());
 		addInfoText("heigth: " + g.heigth());
 		addInfoText("burning: " + g.burningCells());
 		addInfoText("protected: " + g.protectedCells());
-		addInfoText("time: " + g.time());
-		pack();
+		if(evolution!=null)
+			addInfoText("time: " + g.time() + "/" + evolution.simulationTime());
+		else
+			addInfoText("time: " + g.time());
+		if(g.timeBottomReached() == Integer.MAX_VALUE)
+			addInfoText("BottomReached at: inf");
+		else
+			addInfoText("BottomReached at: " + g.timeBottomReached());
 	}
 	
 	private void addInfoText(String s) {
@@ -237,6 +335,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	}
 	
 	public void startAnimation() {
+		refreshTimer.stop();
 		animationTimer.start();
 	}
 	
@@ -279,6 +378,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	
 	public void stopAnimation() {
 		animationTimer.stop();
+		refreshTimer.start();
 		animate.setEnabled(true);
 		startEvolution.setEnabled(true);
 	}

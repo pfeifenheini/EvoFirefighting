@@ -18,15 +18,14 @@ public class ScatteredStrategy extends GeneralStrategy {
 			int simulationTime,
 			double initialAccount,
 			double budget,
-			double mutationRate,
-			Coordinate startFire) {
-		super(simulationTime, initialAccount, budget, mutationRate, startFire);
-		int sequenceLength = (int)(initialAccount+budget*simulationTime);
+			double mutationRate) {
+		super(simulationTime, initialAccount, budget, mutationRate);
+		int sequenceLength = (int)(this.initialAccount+this.budget*this.simulationTime);
 		sequence = new ArrayList<Coordinate>(sequenceLength);
 		int x, y;
 		for(int i=0;i<sequenceLength;i++) {
-			x = (int)(rand.nextGaussian()*simulationTime/5.0+startFire.x);
-			y = (int)(rand.nextGaussian()*simulationTime/5.0+startFire.y);
+			x = (int)(rand.nextGaussian()*this.simulationTime/5.0+startFire.x);
+			y = (int)(rand.nextGaussian()*this.simulationTime/5.0+startFire.y);
 			x = Math.max(0, Math.min(x, grid.width()-1));
 			y = Math.max(0, Math.min(y, grid.heigth()-1));
 			sequence.add(new Coordinate(x,y));

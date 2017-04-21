@@ -11,28 +11,29 @@ import strategy.Strategy;
 
 public class ConnectedStrategy extends GeneralStrategy {
 	
-	private Coordinate start;
-	private ArrayList<Extension> sequence;
+	protected Coordinate start;
+	protected ArrayList<Extension> sequence;
 	
-	private ListIterator<Extension> it;
-	private Coordinate front;
-	private Coordinate back;
+	protected ListIterator<Extension> it;
+	protected Coordinate front;
+	protected Coordinate back;
 	
 	public ConnectedStrategy(
 			int simulationTime,
 			double initialAccount,
 			double budget,
 			double mutationRate,
-			Coordinate startFire,
-			Coordinate startProtection) {
-		super(simulationTime, initialAccount, budget, mutationRate, startFire);
+			Coordinate startOffset) {
+		super(simulationTime, initialAccount, budget, mutationRate);
 		
-		if(startProtection == null)
+		if(startOffset == null)
 			start = new Coordinate(startFire.x,startFire.y-1);
 		else
-			startFire = startProtection;
+			start = new Coordinate(
+					Math.max(0, Math.min(startFire.x+startOffset.x, grid.width()-1)),
+					Math.max(0, Math.min(startFire.y+startOffset.y, grid.heigth()-1)));
 		
-		int sequenceLength = (int)(initialAccount+budget*simulationTime);
+		int sequenceLength = (int)(this.initialAccount+this.budget*this.simulationTime);
 		sequence = new ArrayList<Extension>(sequenceLength);
 		for(int i=0;i<sequenceLength;i++) {
 			sequence.add(new Extension(rand));

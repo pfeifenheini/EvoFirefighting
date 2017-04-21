@@ -15,7 +15,7 @@ public class Grid implements Cloneable {
 	private int numberOfBurningCells = 0;
 	private int numberOfProtectedCells = 0;
 	private int[] burningCellsPerRow;
-	private int timeToReachBottom = -1;
+	private int timeBottomReached = -1;
 	private boolean fireReachedEdge = false;
 	
 	Queue<Coordinate> fireFront = new LinkedList<Coordinate>();
@@ -53,7 +53,7 @@ public class Grid implements Cloneable {
 		for(int i=0;i<burningCellsPerRow.length;i++)
 			burningCellsPerRow[i] = 0;
 		fireReachedEdge = false;
-		timeToReachBottom = -1;
+		timeBottomReached = -1;
 		fireFront.clear();
 	}
 	
@@ -72,8 +72,8 @@ public class Grid implements Cloneable {
 				if(x==0 || y==0 || x==width-1 || y==heigth-1)
 					fireReachedEdge = true;
 				burningCellsPerRow[y]++;
-				if(y==0 && timeToReachBottom==-1)
-					timeToReachBottom = time;
+				if(y==0 && timeBottomReached==-1)
+					timeBottomReached = time;
 				return true;
 			}
 		}
@@ -149,8 +149,10 @@ public class Grid implements Cloneable {
 		return fireFront.size();
 	}
 	
-	public int timeToReachBottom() {
-		return timeToReachBottom;
+	public int timeBottomReached() {
+		if(timeBottomReached==-1)
+			return Integer.MAX_VALUE;
+		return timeBottomReached;
 	}
 	
 	public int time() {
