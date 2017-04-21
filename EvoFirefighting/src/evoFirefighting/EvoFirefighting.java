@@ -94,7 +94,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	
 	/** Controls how often a strategy is loaded while the evolution is running. */
 	private Timer refreshTimer = new Timer(
-			500,
+			DEFAULT_ANIMATION_DELAY,
 			new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -198,6 +198,11 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		increaseOffset.addActionListener(this);
 		
 		setTooltips();
+		decreaseAnimationSpeed.setEnabled(false);
+		increaseAnimationSpeed.setEnabled(false);
+		animate.setEnabled(false);
+		decreaseOffset.setEnabled(false);
+		increaseOffset.setEnabled(false);
 		
 		loadGrid(new Grid(GridCanvas.DEFAULT_WIDTH,GridCanvas.DEFAULT_HEIGHT));
 		pack();
@@ -283,6 +288,9 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			strategyToAnimate = null;
 			
 			refreshTimer.start();
+			animate.setEnabled(true);
+			decreaseOffset.setEnabled(true);
+			increaseOffset.setEnabled(true);
 		}
 		if(e.getSource() == decreaseOffset) {
 			if((e.getModifiers() & ActionEvent.ALT_MASK) != 0)
@@ -406,6 +414,8 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		decreaseOffset.setEnabled(false);
 		increaseOffset.setEnabled(false);
 		strategyChoice.setEnabled(false);
+		decreaseAnimationSpeed.setEnabled(true);
+		increaseAnimationSpeed.setEnabled(true);
 		refreshTimer.stop();
 		animationTimer.start();
 	}
@@ -421,6 +431,8 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		decreaseOffset.setEnabled(true);
 		increaseOffset.setEnabled(true);
 		strategyChoice.setEnabled(true);
+		decreaseAnimationSpeed.setEnabled(false);
+		increaseAnimationSpeed.setEnabled(false);
 	}
 
 	/**
