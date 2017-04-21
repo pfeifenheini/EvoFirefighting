@@ -25,9 +25,9 @@ public class Evolution implements Runnable{
 			Properties parameters) {
 		if(parameters==null) parameters=new Properties();
 		simulationTime = Integer.parseInt(parameters.getProperty("simulationTime", "-1"));
-		double initialAccount = Double.parseDouble(parameters.getProperty("initialAccount", "-1"));
-		double budget = Double.parseDouble(parameters.getProperty("budget", "-1"));
-		double mutationRate = Double.parseDouble(parameters.getProperty("mutationRate", "-1"));
+		double initialAccount = Double.parseDouble(parameters.getProperty("initialAccount", "-1").replaceAll(",", "."));
+		double budget = Double.parseDouble(parameters.getProperty("budget", "-1").replaceAll(",", "."));
+		double mutationRate = Double.parseDouble(parameters.getProperty("mutationRate", "-1").replaceAll(",", "."));
 		
 		Coordinate startOffset = parseCoordinate(parameters.getProperty("startOffset","(0,0)"));
 		if(startOffset.x == 0 && startOffset.y == 0)

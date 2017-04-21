@@ -284,9 +284,9 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	
 	private void updateParametersInfo() {
 		addInfoText("--- Parameters ---");
-		addInfoText("initialBudget: " + parameters.getProperty("initialBudget"));
-		addInfoText("budget: " + parameters.getProperty("budget"));
-		addInfoText("mutationRate: " + parameters.getProperty("mutationRate"));
+		addInfoText("initialBudget: " + parameters.getProperty("initialBudget").replaceAll(",", "."));
+		addInfoText("budget: " + parameters.getProperty("budget").replaceAll(",", "."));
+		addInfoText("mutationRate: " + parameters.getProperty("mutationRate").replaceAll(",", "."));
 		if(strategyToAnimate instanceof ConnectedProtectionStrategy)
 			addInfoText("startOffset: " + parameters.getProperty("startOffset"));
 		if(strategyToAnimate instanceof ConnectedProtectionStrategy)
