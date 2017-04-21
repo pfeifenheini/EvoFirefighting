@@ -10,17 +10,33 @@ import strategy.connectedStrategy.ConnectedStrategy;
 import strategy.scatteredStrategy.ScatteredProtectionStrategy;
 import strategy.scatteredStrategy.ScatteredStrategy;
 
+/**
+ * Implements an evolutionary algorithm to solve the fire fighter problem on a grid.
+ * @author Martin
+ *
+ */
 public class Evolution implements Runnable{
 	
+	/** Population, which will be ordered by fitness. The best individual will be at index 0. */
 	Strategy[] population;
 	
+	/** Thread that will run the algorithm. */
 	Thread thread;
+	/** Indicator whether the thread is running. */
 	private boolean running = false;
+	/** Interrupts the thread if the population is accessed */
 	private boolean pause = false;
 	
+	/** Generation counter. */
 	private int generation = 0;
+	/** Simulation time that is used for fitnes determination. */
 	private int simulationTime = 0;
 	
+	/**
+	 * Constructor.
+	 * @param mode Operation mode defines which problem will be solved and what kind of strategy is used.
+	 * @param parameters Parameters for the algorithm.
+	 */
 	public Evolution(
 			Mode mode,
 			Properties parameters) {
@@ -51,6 +67,11 @@ public class Evolution implements Runnable{
 		Arrays.sort(population);
 	}
 	
+	/**
+	 * Parses two dimensional coordinates from a String in the form "(x,y)". 
+	 * @param s String to parse.
+	 * @return Coordinated the string represents.
+	 */
 	public static Coordinate parseCoordinate(String s) {
 		int x, y;
 		String cleaned = s.replaceAll(" ", "");
@@ -94,6 +115,9 @@ public class Evolution implements Runnable{
 		return s;
 	}
 	
+	/**
+	 * Starts a new thread which will perform the algorithm. Only starts if the thread isn't already running.
+	 */
 	public void startEvolution() {
 		if(!running) {
 			thread = new Thread(this);
@@ -102,6 +126,9 @@ public class Evolution implements Runnable{
 		}
 	}
 	
+	/**
+	 * Stops the thread. After this method has been called, the algorithm can be startet again.
+	 */
 	public void stopEvolution() {
 		running = false;
 		try {
@@ -111,14 +138,26 @@ public class Evolution implements Runnable{
 		}
 	}
 	
+	/**
+	 * 
+	 * @return Population size.
+	 */
 	public int populationSize() {
 		return population.length;
 	}
 	
+	/**
+	 * 
+	 * @return Simulation time used for fitness determination.
+	 */
 	public int simulationTime() {
 		return simulationTime;
 	}
 	
+	/**
+	 * 
+	 * @return Current generation.
+	 */
 	public int generation() {
 		return generation;
 	}

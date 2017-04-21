@@ -9,15 +9,30 @@ import grid.State;
 import strategy.GeneralStrategy;
 import strategy.Strategy;
 
+/**
+ * A connected strategy builds a single barrier. It is defines by a sequence of directions that
+ * tell where to extend an end of the barrier.
+ * @author Martin
+ *
+ */
 public class ConnectedStrategy extends GeneralStrategy {
 	
+	/** Start point of the barrier. */
 	protected Coordinate start;
+	/** Sequence of directions. */
 	protected ArrayList<Extension> sequence;
-	
+	/** Iterator over the sequence. */
 	protected ListIterator<Extension> it;
+	/** Current front of the barrier. */
 	protected Coordinate front;
+	/** Current back of the barrier. */
 	protected Coordinate back;
 	
+	/**
+	 * Constructor.
+	 * @see GeneralStrategy
+	 * @param startOffset Start of the barrier relative to the origin of the fire.
+	 */
 	public ConnectedStrategy(
 			int simulationTime,
 			double initialAccount,
@@ -27,11 +42,11 @@ public class ConnectedStrategy extends GeneralStrategy {
 		super(simulationTime, initialAccount, budget, mutationRate);
 		
 		if(startOffset == null)
-			start = new Coordinate(grid.width()/2,grid.heigth()/2-1);
+			start = new Coordinate(grid.width()/2,grid.height()/2-1);
 		else
 			start = new Coordinate(
 					Math.max(0, Math.min(grid.width()/2+startOffset.x, grid.width()-1)),
-					Math.max(0, Math.min(grid.heigth()/2+startOffset.y, grid.heigth()-1)));
+					Math.max(0, Math.min(grid.height()/2+startOffset.y, grid.height()-1)));
 		
 		int sequenceLength = (int)(this.initialAccount+this.budget*this.simulationTime);
 		sequence = new ArrayList<Extension>(sequenceLength);
@@ -92,6 +107,12 @@ public class ConnectedStrategy extends GeneralStrategy {
 		return success;
 	}
 
+	/**
+	 * Determines the neighbor of a cell in the given direction.
+	 * @param c Cell whose neighbor is to determines.
+	 * @param dir Direction of the neighboring cell.
+	 * @return Neighboring cell in the given direction.
+	 */
 	private Coordinate getNeighbor(Coordinate c, Direction dir) {
 		int x = c.x;
 		int y = c.y;
@@ -148,12 +169,6 @@ public class ConnectedStrategy extends GeneralStrategy {
 		if(changed)
 			fitness = -1;
 	}
-
-	@Override
-	public Strategy generateOffspring(Strategy p1, Strategy p2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	@Override
 	public void copy(Strategy s) {
@@ -174,12 +189,10 @@ public class ConnectedStrategy extends GeneralStrategy {
 		for(Extension e:sequence)
 			s.sequence.add(e.clone());
 		
-		s.grid = new Grid(grid.width(),grid.heigth());
+		s.grid = new Grid(grid.width(),grid.height());
 		s.reset();
 		
 		s.fitness = fitness;
 		return s;
 	}
-
-
 }

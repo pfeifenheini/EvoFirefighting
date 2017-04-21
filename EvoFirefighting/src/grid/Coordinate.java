@@ -1,19 +1,33 @@
 package grid;
 
-
-
+/**
+ * Implements a two dimensional coordinate.
+ * @author Martin
+ *
+ */
 public class Coordinate implements Cloneable {
+	/** x coordinate */
 	public int x;
+	/** y coordinate */
 	public int y;
 	
+	/**
+	 * Constructor
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 */
 	public Coordinate(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
 	
-	public void copy(Coordinate c) {
-		x = c.x;
-		y = c.y;
+	/**
+	 * Copies the values of a given coordinate.
+	 * @param toCopy
+	 */
+	public void copy(Coordinate toCopy) {
+		x = toCopy.x;
+		y = toCopy.y;
 	}
 	
 	@Override

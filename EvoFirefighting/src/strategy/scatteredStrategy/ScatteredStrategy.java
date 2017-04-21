@@ -10,12 +10,22 @@ import grid.Grid;
 import strategy.GeneralStrategy;
 import strategy.Strategy;
 
+/**
+ * A scattered strategy is defined by a sequence of fixed coordinates which defines the cells that
+ * will be protected and their order.
+ * @author Martin
+ *
+ */
 public class ScatteredStrategy extends GeneralStrategy {
-	
+	/** Sequence of coordinate that will be protected. */
+	protected ArrayList<Coordinate> sequence;
+	/** Defines which cell to protect next by iterating oder the sequence. */
 	protected ListIterator<Coordinate> it;
 	
-	protected ArrayList<Coordinate> sequence;
-	
+	/**
+	 * Constructor
+	 * @see GeneralStrategy
+	 */
 	public ScatteredStrategy(
 			int simulationTime,
 			double initialAccount,
@@ -27,9 +37,9 @@ public class ScatteredStrategy extends GeneralStrategy {
 		int x, y;
 		for(int i=0;i<sequenceLength;i++) {
 			x = (int)(rand.nextGaussian()*grid.width()/10.0+grid.width()/2);
-			y = (int)(rand.nextGaussian()*grid.heigth()/10.0+grid.heigth()/2);
+			y = (int)(rand.nextGaussian()*grid.height()/10.0+grid.height()/2);
 			x = Math.max(0, Math.min(x, grid.width()-1));
-			y = Math.max(0, Math.min(y, grid.heigth()-1));
+			y = Math.max(0, Math.min(y, grid.height()-1));
 			sequence.add(new Coordinate(x,y));
 		}
 		reset();
@@ -64,15 +74,12 @@ public class ScatteredStrategy extends GeneralStrategy {
 		boolean changed = false;
 		for(int i=0;i<sequence.size();i++) {
 			if(rand.nextDouble()<mutationRate/sequence.size()) {
-//				if(rand.nextBoolean())
-					gaussianWiggle(sequence.get(i));
-//				else
-//					Collections.swap(sequence, i, rand.nextInt(sequence.size()));
+				gaussianWiggle(sequence.get(i));
 				changed = true;
 			}
 		}
 		
-		Coordinate fireStart = new Coordinate(grid.width()/2,grid.heigth()/2);
+		Coordinate fireStart = new Coordinate(grid.width()/2,grid.height()/2);
 		Collections.sort(sequence, new Comparator<Coordinate>() {
 			@Override
 			public int compare(Coordinate arg0, Coordinate arg1) {
@@ -88,20 +95,14 @@ public class ScatteredStrategy extends GeneralStrategy {
 	}
 	
 	/**
-	 * Changes the given coordinate to an close coordinate according to a gaussian distribution
-	 * @param c
+	 * Changes the given coordinate to an close coordinate according to a gaussian distribution.
+	 * @param c Coordinate the will be altered
 	 */
 	private void gaussianWiggle(Coordinate c) {
 		int xOffset = (int) (rand.nextGaussian()*5);
 		int yOffset = (int) (rand.nextGaussian()*5);
 		c.x = Math.max(0, Math.min(c.x+xOffset, grid.width()-1));
-		c.y = Math.max(0, Math.min(c.y+yOffset, grid.heigth()-1));
-	}
-
-	@Override
-	public Strategy generateOffspring(Strategy p1, Strategy p2) {
-		// TODO Auto-generated method stub
-		return null;
+		c.y = Math.max(0, Math.min(c.y+yOffset, grid.height()-1));
 	}
 	
 	@Override
@@ -121,7 +122,7 @@ public class ScatteredStrategy extends GeneralStrategy {
 		for(Coordinate c:sequence)
 			s.sequence.add(c.clone());
 		
-		s.grid = new Grid(grid.width(),grid.heigth());
+		s.grid = new Grid(grid.width(),grid.height());
 		s.reset();
 		
 		s.fitness = fitness;

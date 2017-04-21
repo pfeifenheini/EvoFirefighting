@@ -4,10 +4,21 @@ import grid.Coordinate;
 import grid.Grid;
 import strategy.Strategy;
 
+/**
+ * Implements a connected strategy for the highway protection problem.
+ * @see ConnectedStrategy
+ * @author Martin
+ *
+ */
 public class ConnectedProtectionStrategy extends ConnectedStrategy {
-	
+	/** The distance to the highway */
 	private int highwayDistance = 20;
 	
+	/**
+	 * Constructor.
+	 * @see ConnectedStrategy
+	 * @param highwayDistance Distance from the origin to the Highway.
+	 */
 	public ConnectedProtectionStrategy(
 			int simulationTime,
 			double initialAccount,
@@ -22,7 +33,7 @@ public class ConnectedProtectionStrategy extends ConnectedStrategy {
 		if(startOffset != null)
 			start = new Coordinate(
 					Math.max(0, Math.min(grid.width()/2+startOffset.x, grid.width()-1)),
-					Math.max(0, Math.min(grid.heigth()/2+startOffset.y, grid.heigth()-1)));
+					Math.max(0, Math.min(grid.height()/2+startOffset.y, grid.height()-1)));
 		
 		reset();
 	}
@@ -47,7 +58,7 @@ public class ConnectedProtectionStrategy extends ConnectedStrategy {
 			return toCompare.grid.timeBottomReached()-grid.timeBottomReached();
 		}
 		
-		for(int row=0;row<grid.heigth();row++) {
+		for(int row=0;row<grid.height();row++) {
 			if(grid.burningCells(row)!=toCompare.grid.burningCells(row))
 				return grid.burningCells(row)-toCompare.grid.burningCells(row);
 			

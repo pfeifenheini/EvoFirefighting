@@ -1,5 +1,10 @@
 package evoFirefighting;
 
+/**
+ * Different operation modes.
+ * @author Martin
+ *
+ */
 public enum Mode {
 	EncloseConnected("enclose connected"),
 	EncloseScattered("enclose scattered"),

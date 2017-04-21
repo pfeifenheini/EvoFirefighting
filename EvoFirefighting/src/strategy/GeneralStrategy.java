@@ -5,28 +5,41 @@ import java.util.Random;
 
 import grid.Grid;
 
+/**
+ * This class implements a general strategy, since some functions will be identical throughout all
+ * different strategies. However if necessary, functions can be overridden.
+ * @author Martin
+ *
+ */
 public abstract class GeneralStrategy implements Strategy {
-
-//	public static double defaultInitialAccount = 2.0;
-//	public static double defaultBudget = 2.0;
-//	public static int defaultSimulationTime = 50;
-//	public static double defaultMutationRate = 2.5;
 	
-	/** random number generator that has to be used for all random processes **/
+	/** Random number generator that has to be used for all random processes. **/
 	protected static Random rand = new Random();
 	
+	/** Initial account, defines the number of cells that can be protected in the first step. */
 	protected double initialAccount = 2.0;
+	/** Defines how many cells can be protected at each step */
 	protected double budget = 2.0;
+	/** Number of steps the strategy is simulated before determining its fitness. */
 	protected int simulationTime = 50;
+	/** A higher mutation rate increases the cahnce for changes during the mutation step */
 	protected double mutationRate = 2.5;
-//	protected Coordinate startFire = null;
 	
-	
+	/** The grid that is used for the simulation of the strategy. */
 	protected Grid grid;
 	
+	/** Fitness of this strategy. A value of -1 means that the fitness has not yet ben determined. */
 	protected double fitness = -1.0;
+	/** Indicates whether the simulation of this strategy is finished */
 	protected boolean finished = false;
 	
+	/**
+	 * Constructor
+	 * @param simulationTime maximal number of simulated fire spreads
+	 * @param initialAccount initial account defines the number of cell protecte in the first step
+	 * @param budget defines how many cells can be protected per step
+	 * @param mutationRate A higher mutation rate increases the cahnce for changes during the mutation step
+	 */
 	public GeneralStrategy(
 			int simulationTime,
 			double initialAccount,
@@ -41,7 +54,6 @@ public abstract class GeneralStrategy implements Strategy {
 		if(mutationRate>=0)
 			this.mutationRate = mutationRate;
 		
-//		startFire  = new Coordinate(this.simulationTime,this.simulationTime);
 		grid = new Grid(2*this.simulationTime+1,2*this.simulationTime+1);
 	}
 
@@ -53,6 +65,7 @@ public abstract class GeneralStrategy implements Strategy {
 		return !finished;
 	}
 	
+
 	@Override
 	public boolean step() {
 		if(finished()) return false;
@@ -83,7 +96,7 @@ public abstract class GeneralStrategy implements Strategy {
 	@Override
 	public void reset() {
 		grid.reset();
-		grid.ignite(grid.width()/2, grid.heigth()/2);
+		grid.ignite(grid.width()/2, grid.height()/2);
 		finished = false;
 	}
 

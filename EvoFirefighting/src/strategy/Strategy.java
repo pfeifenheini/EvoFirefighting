@@ -2,6 +2,11 @@ package strategy;
 
 import grid.Grid;
 
+/**
+ * This interface defines a general strategy. 
+ * @author Martin
+ *
+ */
 public interface Strategy extends Cloneable, Comparable<Strategy> {
 
 	/**
@@ -15,22 +20,40 @@ public interface Strategy extends Cloneable, Comparable<Strategy> {
 	 */
 	public boolean spreadStep();
 	/**
-	 * combines one protection and one spreading step.
+	 * Combines one protection and one spreading step.
 	 * @return true if the fire can continue spreading
 	 */
 	public boolean step();
-	public boolean finished();
-	public double fitness();
-	public Grid cloneGrid();
-	public void reset();
-	public void mutate();
-	public Strategy generateOffspring(Strategy p1, Strategy p2);
 	/**
-	 * Copies all parameters of the given strategy, is possible without the need to allocate new memory.
-	 * @param s
+	 * Returns whether this strategy is finished. That means ne fire has been spread for the maximal simulation time,
+	 * or can no longer spread. 
 	 * @return
 	 */
-	public void copy(Strategy s);
+	public boolean finished();
+	/**
+	 * Returns the fitness of the strategy.
+	 * @return
+	 */
+	public double fitness();
+	/**
+	 * Returns a clone of the current grid the strategy uses for simulation.
+	 * @return
+	 */
+	public Grid cloneGrid();
+	/**
+	 * Resets this strategy. That means the grid is cleared and only the origin is set on fire.
+	 */
+	public void reset();
+	/**
+	 * Performs a mutation on this strategy. A mutation is usually a small random change
+	 * to the parameters that define the strategy.
+	 */
+	public void mutate();
+	/**
+	 * Copies the parameters of the given Strategy.
+	 * @param arg0 Strategy that shall be copied.
+	 */
+	public void copy(Strategy arg0);
 	public Strategy clone();
-	public int compareTo(Strategy s);
+	public int compareTo(Strategy arg0);
 }

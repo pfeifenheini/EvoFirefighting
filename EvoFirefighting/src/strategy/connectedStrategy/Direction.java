@@ -1,6 +1,10 @@
 package strategy.connectedStrategy;
 
-
+/**
+ * Possible directions of neighboring cells on a two dimensional grid.
+ * @author Martin
+ *
+ */
 public enum Direction {
 	N, NE, E, SE, S, SW, W, NW;
 	

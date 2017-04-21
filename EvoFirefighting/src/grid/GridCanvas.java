@@ -11,22 +11,27 @@ import javax.swing.Timer;
 
 import evoFirefighting.GridMouseAdapter;
 
+/**
+ * Panel that draws a Grid.
+ * @author Martin
+ *
+ */
 public class GridCanvas extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
 	public static final int REFRESH_RATE = 30;
-	public static final int DEFAULT_PIXEL_SIZE = 5;
+	public static final int DEFAULT_CELL_SIZE = 5;
 	public static final int DEFAULT_WIDTH = 101;
-	public static final int DEFAULT_HEIGTH = 101;
-	public static final int DEFAULT_ANIMATION_DELAY = 500;
+	public static final int DEFAULT_HEIGHT = 101;
+
+	/** Size of a single cell in the grid. */
+	private int cellSize = DEFAULT_CELL_SIZE;
 	
-	private int pixelSize = DEFAULT_PIXEL_SIZE;
-	private int width = DEFAULT_WIDTH;
-	private int height = DEFAULT_HEIGTH;
-	
+	/** The grid that is painted. */
 	private Grid grid = null;
 	
+	/** Continues repainting this component. */
 	private Timer refreshTimer= new Timer(
 			1000/REFRESH_RATE,
 			new ActionListener() {
@@ -36,9 +41,10 @@ public class GridCanvas extends JPanel {
 				}
 			});
 	
+	/**
+	 * Constructor.
+	 */
 	public GridCanvas() {
-//		loadGrid(new Grid(width,height));
-		
 		refreshTimer.start();
 		
 		setBackground(Color.WHITE);
@@ -48,15 +54,21 @@ public class GridCanvas extends JPanel {
 		addMouseMotionListener(a);
 	}
 	
+	/**
+	 * Loads a grid. It will be painted during the next refresh cycle.
+	 * @param grid Grid to paint.
+	 */
 	public void loadGrid(Grid grid) {
 		synchronized(this) {
 			this.grid = grid;
-			width = grid.width();
-			height = grid.heigth();
-			setPreferredSize(new Dimension(pixelSize*width,pixelSize*height));
+			setPreferredSize(new Dimension(cellSize*grid.width(),cellSize*grid.height()));
 		}
 	}
 	
+	/**
+	 * Returns the currently loaded grid.
+	 * @return Current grid.
+	 */
 	public Grid getGrid() {
 		return grid;
 	}
@@ -70,8 +82,8 @@ public class GridCanvas extends JPanel {
 		if(grid != null) {
 			synchronized(this) {
 				// paint cells
-				for(int x=0;x<width;x++) {
-					for(int y=0;y<height;y++) {
+				for(int x=0;x<grid.width();x++) {
+					for(int y=0;y<grid.height();y++) {
 						switch (grid.state(x, y)) {
 						case Burning:
 							g.setColor(Color.getHSBColor(hue+step*(grid.time(x, y)%10), saturation, brightness));
@@ -85,33 +97,38 @@ public class GridCanvas extends JPanel {
 							g.setColor(Color.BLACK);
 							break;
 						}
-						g.fillRect(x*pixelSize, (height-y-1)*pixelSize, pixelSize, pixelSize);
+						g.fillRect(x*cellSize, (grid.height()-y-1)*cellSize, cellSize, cellSize);
 					}
 				}
 			}
 			// paint raster
-			if(pixelSize>=3) {
-				for(int x=0;x<width;x++) {
-					for(int y=0;y<height;y++) {
+			if(cellSize>=3) {
+				for(int x=0;x<grid.width();x++) {
+					for(int y=0;y<grid.height();y++) {
 						if(grid.state(x, y)==State.Free)
 							g.setColor(Color.LIGHT_GRAY);
 						else
 							g.setColor(Color.DARK_GRAY);
-						g.drawRect(x*pixelSize, (height-y-1)*pixelSize, pixelSize, pixelSize);
+						g.drawRect(x*cellSize, (grid.height()-y-1)*cellSize, cellSize, cellSize);
 					}
 				}
 			}
 		}
 	}
-	
 
-	public int getPixelSize() {
-		return pixelSize;
+	/**
+	 * @return The current pixel size of a cell.
+	 */
+	public int getCellSize() {
+		return cellSize;
 	}
 
-	public void setPixelSize(int pixelSize) {
-		this.pixelSize = pixelSize;
-		setPreferredSize(new Dimension(pixelSize*width,pixelSize*height));
-//		repaint();
+	/**
+	 * Sets the pixel size of a cell.
+	 * @param cellSize New size.
+	 */
+	public void setCellSize(int cellSize) {
+		this.cellSize = cellSize;
+		setPreferredSize(new Dimension(cellSize*grid.width(),cellSize*grid.height()));
 	}
 }
