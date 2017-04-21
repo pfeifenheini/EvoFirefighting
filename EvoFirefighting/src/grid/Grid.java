@@ -32,15 +32,6 @@ public class Grid implements Cloneable {
 		burningCellsPerRow = new int[heigth];
 	}
 	
-	public State state(int x, int y) {
-		try {
-			return cells[x][y].state;
-		} catch (Exception e) {
-			accessError(x, y, e);
-		}
-		return null;
-	}
-	
 	public void reset() {
 		for(int x=0;x<width;x++) {
 			for(int y=0;y<heigth;y++) {
@@ -67,6 +58,7 @@ public class Grid implements Cloneable {
 		if(x>=0 && x<width && y>=0 && y<heigth) {
 			if(cells[x][y].state == State.Free) {
 				cells[x][y].state = State.Burning;
+				cells[x][y].time = time;
 				fireFront.add(new Coordinate(x,y));
 				numberOfBurningCells++;
 				if(x==0 || y==0 || x==width-1 || y==heigth-1)
@@ -159,6 +151,24 @@ public class Grid implements Cloneable {
 		return time;
 	}
 	
+	public int time(int x, int y) {
+		try {
+			return cells[x][y].time;
+		} catch (Exception e) {
+			accessError(x, y, e);
+		}
+		return 0;
+	}
+	
+	public State state(int x, int y) {
+		try {
+			return cells[x][y].state;
+		} catch (Exception e) {
+			accessError(x, y, e);
+		}
+		return null;
+	}
+
 	@Override
 	public Grid clone() {
 		Grid g = null;

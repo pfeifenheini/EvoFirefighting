@@ -15,7 +15,7 @@ public class GridCanvas extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public static final int REFRESH_RATE = 1;
+	public static final int REFRESH_RATE = 30;
 	public static final int DEFAULT_PIXEL_SIZE = 5;
 	public static final int DEFAULT_WIDTH = 101;
 	public static final int DEFAULT_HEIGTH = 101;
@@ -65,6 +65,8 @@ public class GridCanvas extends JPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		
+		float hue=0.0f, saturation=1.0f, brightness=1.0f, step=0.02f;
+		
 		if(grid != null) {
 			synchronized(this) {
 				// paint cells
@@ -72,7 +74,9 @@ public class GridCanvas extends JPanel {
 					for(int y=0;y<height;y++) {
 						switch (grid.state(x, y)) {
 						case Burning:
-							g.setColor(Color.RED);
+							g.setColor(Color.getHSBColor(hue+step*(grid.time(x, y)%10), saturation, brightness));
+							if(grid.time(x, y)==0)
+								g.setColor(Color.CYAN);
 							break;
 						case Free:
 							g.setColor(Color.WHITE);
@@ -86,10 +90,13 @@ public class GridCanvas extends JPanel {
 				}
 			}
 			// paint raster
-			if(pixelSize>=4) {
-				g.setColor(Color.lightGray);
+			if(pixelSize>=3) {
 				for(int x=0;x<width;x++) {
 					for(int y=0;y<height;y++) {
+						if(grid.state(x, y)==State.Free)
+							g.setColor(Color.LIGHT_GRAY);
+						else
+							g.setColor(Color.DARK_GRAY);
 						g.drawRect(x*pixelSize, (height-y-1)*pixelSize, pixelSize, pixelSize);
 					}
 				}
