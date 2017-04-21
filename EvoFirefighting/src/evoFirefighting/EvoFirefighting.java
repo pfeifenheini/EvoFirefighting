@@ -174,8 +174,22 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		decreaseOffset.addActionListener(this);
 		increaseOffset.addActionListener(this);
 		
+		setTooltips();
+		
 		loadGrid(new Grid(GridCanvas.DEFAULT_WIDTH,GridCanvas.DEFAULT_HEIGTH));
 		pack();
+	}
+	
+	private void setTooltips() {
+		zoomIn.setToolTipText("increase the cell size");
+		zoomOut.setToolTipText("decrease the cell size");
+		settings.setToolTipText("change parameters");
+		decreaseAnimationSpeed.setToolTipText("decrease animation speed");
+		increaseAnimationSpeed.setToolTipText("increase animation speed");
+		animate.setToolTipText("start animation");
+		startEvolution.setToolTipText("reinitializes and restarts the evolution with current settings");
+		decreaseOffset.setToolTipText("skip through population");
+		increaseOffset.setToolTipText("skip through population");
 	}
 
 	@Override
@@ -222,8 +236,6 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			animationTimer.restart();
 		}
 		if(e.getSource() == animate) {
-			animate.setEnabled(false);
-			startEvolution.setEnabled(false);
 			resetAnimation();
 			startAnimation();
 		}
@@ -337,10 +349,25 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	}
 	
 	public void startAnimation() {
+		animate.setEnabled(false);
+		startEvolution.setEnabled(false);
+		decreaseOffset.setEnabled(false);
+		increaseOffset.setEnabled(false);
+		strategyChoice.setEnabled(false);
 		refreshTimer.stop();
 		animationTimer.start();
 	}
 	
+	public void stopAnimation() {
+		animationTimer.stop();
+		refreshTimer.start();
+		animate.setEnabled(true);
+		startEvolution.setEnabled(true);
+		decreaseOffset.setEnabled(true);
+		increaseOffset.setEnabled(true);
+		strategyChoice.setEnabled(true);
+	}
+
 	public void resetAnimation() {
 		animationTimer.stop();
 		while(animationTimer.isRunning()){
@@ -375,13 +402,6 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	private void loadGrid(Grid g) {
 		canvas.loadGrid(g);
 		updateInfo();
-	}
-	
-	public void stopAnimation() {
-		animationTimer.stop();
-		refreshTimer.start();
-		animate.setEnabled(true);
-		startEvolution.setEnabled(true);
 	}
 
 }
