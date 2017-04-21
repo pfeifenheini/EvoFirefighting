@@ -16,6 +16,8 @@ public enum Parameter {
 	startOffset(new Coordinate(0,-1),Type.Coordinate),
 	highwayDistance(20,Type.Integer)
 	;
+	
+	private enum Type {Integer,Double,Coordinate};
 
 	private Type type;
 	private String defaultValueString;
