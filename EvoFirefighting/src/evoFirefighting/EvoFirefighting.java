@@ -2,9 +2,15 @@ package evoFirefighting;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
+
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -49,6 +55,9 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	
 	private JButton settings = 
 			new JButton("settings");
+	
+	private JButton save =
+			new JButton("save");
 	 
 	// Don't know how to fix this warning
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -159,6 +168,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		topPane.add(zoomOut);
 		topPane.add(zoomIn);
 		topPane.add(settings);
+		topPane.add(save);
 		contentPane.add(topPane,BorderLayout.PAGE_START);
 		
 		bottomPane = new JPanel();
@@ -175,6 +185,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		zoomIn.addActionListener(this);
 		zoomOut.addActionListener(this);
 		settings.addActionListener(this);
+		save.addActionListener(this);
 		strategyChoice.addActionListener(this);
 		decreaseAnimationSpeed.addActionListener(this);
 		animate.addActionListener(this);
@@ -201,6 +212,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		zoomIn.setToolTipText("increase the cell size");
 		zoomOut.setToolTipText("decrease the cell size");
 		settings.setToolTipText("change parameters");
+		save.setToolTipText("saves the current grid in as an image");
 		decreaseAnimationSpeed.setToolTipText("decrease animation speed");
 		increaseAnimationSpeed.setToolTipText("increase animation speed");
 		animate.setToolTipText("start animation");
@@ -209,6 +221,54 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		increaseOffset.setToolTipText("skip through population");
 	}
 
+	/**
+	 * Opens a dialogue to change the parameters.
+	 */
+	private void changeSettings() {
+		String key;
+		try {
+			key = ((Parameter)JOptionPane.showInputDialog(
+					this,
+					"please type the key you want to change",
+					"key",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					Parameter.values(),
+					"key")).name();
+		} catch (NullPointerException ex) {
+			key = null;
+		}
+		if(key!=null) {
+			String value = parameters.getProperty(key);
+			try {
+				value = (String)JOptionPane.showInputDialog(
+						this,
+						"Please type the new value for \"" + key + "\"",
+						"value",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						null,
+						value);
+			} catch(NullPointerException ex) {
+				value = null;
+			}
+			
+			if(value!=null)
+				parameters.setProperty(key, value);
+		}
+	}
+	
+	/**
+	 * Saves the currently shown grid as an image
+	 */
+	private void saveImage() {
+		try {
+			ImageIO.write(canvas.getImage(), "png", new File("grid.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == zoomIn) {
@@ -225,38 +285,10 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			}
 		}
 		if(e.getSource() == settings) {
-			
-			String key;
-			try {
-				key = ((Parameter)JOptionPane.showInputDialog(
-						this,
-						"please type the key you want to change",
-						"key",
-						JOptionPane.PLAIN_MESSAGE,
-						null,
-						Parameter.values(),
-						"key")).name();
-			} catch (NullPointerException ex) {
-				key = null;
-			}
-			if(key!=null) {
-				String value = parameters.getProperty(key);
-				try {
-					value = (String)JOptionPane.showInputDialog(
-							this,
-							"Please type the new value for \"" + key + "\"",
-							"value",
-							JOptionPane.PLAIN_MESSAGE,
-							null,
-							null,
-							value);
-				} catch(NullPointerException ex) {
-					value = null;
-				}
-				
-				if(value!=null)
-					parameters.setProperty(key, value);
-			}
+			changeSettings();
+		}
+		if(e.getSource() == save) {
+			saveImage();
 		}
 		if(e.getSource() == decreaseAnimationSpeed) {
 			animationTimer.setDelay((int)(animationTimer.getDelay()*2.0));

@@ -3,8 +3,10 @@ package grid;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -77,17 +79,54 @@ public class GridCanvas extends JPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		
+		paintSector(g, new Coordinate(0,0), new Coordinate(grid.width()-1,grid.height()-1),cellSize);
+	}
+	
+	/**
+	 * @return An image of the current grid.
+	 */
+	public BufferedImage getImage() {
+		Coordinate bottomLeft = new Coordinate(grid.width()-1,grid.height()-1);
+		Coordinate topRight = new Coordinate(0,0);
+		for(int x=0;x<grid.width();x++) {
+			for(int y=0;y<grid.height();y++) {
+				if(grid.state(x, y) != State.Free) {
+					if(x<bottomLeft.x)
+						bottomLeft.x = x;
+					if(y<bottomLeft.y)
+						bottomLeft.y = y;
+					if(x>topRight.x)
+						topRight.x = x;
+					if(y>topRight.y)
+						topRight.y = y;
+				}
+			}
+		}
+		BufferedImage image = new BufferedImage((topRight.x-bottomLeft.x+1)*10,(topRight.y-bottomLeft.y+1)*10,BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		paintSector(g, bottomLeft, topRight, 10);
+		return image;
+	}
+	
+	/**
+	 * Paints only the part of the grid between a bottom left and top right coordinate.
+	 * @param g
+	 */
+	public void paintSector(Graphics g, Coordinate bottomLeft, Coordinate topRight, int cellSize) {
 		float hue=0.0f, saturation=1.0f, brightness=1.0f, step=0.02f;
+		
+		int width = topRight.x-bottomLeft.x+1;
+		int height = topRight.y-bottomLeft.y+1;
 		
 		if(grid != null) {
 			synchronized(this) {
 				// paint cells
-				for(int x=0;x<grid.width();x++) {
-					for(int y=0;y<grid.height();y++) {
-						switch (grid.state(x, y)) {
+				for(int x=0;x<width;x++) {
+					for(int y=0;y<height;y++) {
+						switch (grid.state(x+bottomLeft.x, y+bottomLeft.y)) {
 						case Burning:
-							g.setColor(Color.getHSBColor(hue+step*(grid.time(x, y)%10), saturation, brightness));
-							if(grid.time(x, y)==0)
+							g.setColor(Color.getHSBColor(hue+step*(grid.time(x+bottomLeft.x, y+bottomLeft.y)%10), saturation, brightness));
+							if(grid.time(x+bottomLeft.x, y+bottomLeft.y)==0)
 								g.setColor(Color.CYAN);
 							break;
 						case Free:
@@ -97,19 +136,26 @@ public class GridCanvas extends JPanel {
 							g.setColor(Color.BLACK);
 							break;
 						}
-						g.fillRect(x*cellSize, (grid.height()-y-1)*cellSize, cellSize, cellSize);
+						g.fillRect(x*cellSize, (height-y-1)*cellSize, cellSize, cellSize);
 					}
 				}
 			}
 			// paint raster
 			if(cellSize>=3) {
-				for(int x=0;x<grid.width();x++) {
-					for(int y=0;y<grid.height();y++) {
-						if(grid.state(x, y)==State.Free)
+				for(int x=0;x<width;x++) {
+					for(int y=0;y<height;y++) {
+						if(grid.state(x+bottomLeft.x, y+bottomLeft.y)==State.Free) {
 							g.setColor(Color.LIGHT_GRAY);
-						else
+							g.drawRect(x*cellSize, (height-y-1)*cellSize, cellSize, cellSize);
+						}
+					}
+				}
+				for(int x=0;x<width;x++) {
+					for(int y=0;y<height;y++) {
+						if(grid.state(x+bottomLeft.x, y+bottomLeft.y)!=State.Free) {
 							g.setColor(Color.DARK_GRAY);
-						g.drawRect(x*cellSize, (grid.height()-y-1)*cellSize, cellSize, cellSize);
+							g.drawRect(x*cellSize, (height-y-1)*cellSize, cellSize, cellSize);
+						}
 					}
 				}
 			}
