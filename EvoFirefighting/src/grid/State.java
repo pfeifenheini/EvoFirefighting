@@ -6,5 +6,5 @@ package grid;
  *
  */
 public enum State {
-	Burning,Free,Protected;
+	Burning,Free,Protected,Highway;
 }

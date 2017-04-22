@@ -19,9 +19,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.ProgressMonitor;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import grid.Coordinate;
 import grid.Grid;
 import grid.GridCanvas;
 import strategy.Strategy;
@@ -270,6 +272,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	 * @param fileToSave File where the image will be saved
 	 */
 	private void saveImage(File fileToSave) {
+		
 		try {
 			if(fileToSave.exists()) {
 				int input = JOptionPane.showConfirmDialog(
@@ -280,11 +283,47 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 				if(input != JOptionPane.YES_OPTION)
 					return;
 			}
+			System.out.print("saving image ... ");
 			ImageIO.write(canvas.getImage(), "png", fileToSave);
-			System.out.println("Image saved: " + fileToSave.getAbsolutePath());
+			System.out.println("done: " + fileToSave.getAbsolutePath());
+			saveGif(fileToSave);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void saveGif(File fileToSave) {
+		System.out.print("saving gif ... ");
+		Coordinate bottomLeft = new Coordinate(0,0);
+		Coordinate topRight = new Coordinate(0,0);
+		
+		GridCanvas.calculateInterestingPartOfTheGrid(canvas.getGrid(), bottomLeft, topRight);
+		int time = canvas.getGrid().time()*2;
+		float fps = Math.max(2.0f,canvas.getGrid().time()/5.0f);
+		
+		
+		AnimatedGifEncoder gif = new AnimatedGifEncoder();
+		gif.setFrameRate(fps);
+		gif.setQuality(20);
+		gif.start(fileToSave.getAbsolutePath() + ".gif");
+		
+		resetAnimation();
+		ProgressMonitor progress = new ProgressMonitor(null,"saving animation as gif",null,0,time);
+		progress.setMillisToPopup(500);
+		time = 0;
+		while(!strategyToAnimate.finished()) {
+			progress.setProgress(time++);
+			gif.addFrame(canvas.getImage(bottomLeft, topRight));
+			animationStep();
+			if(progress.isCanceled()) {
+				System.out.println("cancelled");
+				return;
+			}
+		}
+		progress.close();
+		gif.addFrame(canvas.getImage(bottomLeft, topRight));
+		gif.finish();
+		System.out.println("done: " + fileToSave.getAbsolutePath() + ".gif");
 	}
 	
 	@Override
@@ -306,12 +345,21 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			changeSettings();
 		}
 		if(e.getSource() == save) {
-			
-			int returnVal = fileChooser.showSaveDialog(this);
-			if(returnVal == JFileChooser.APPROVE_OPTION) {
-				File f = fileChooser.getSelectedFile();
-				saveImage(f);
-			}
+			refreshTimer.stop();
+
+			JFrame parent = this;
+			Thread t = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					int returnVal = fileChooser.showSaveDialog(parent);
+					if(returnVal == JFileChooser.APPROVE_OPTION) {
+						File f = fileChooser.getSelectedFile();
+						saveImage(f);
+					}
+					refreshTimer.start();
+				}
+			});
+			t.start();
 		}
 		if(e.getSource() == decreaseAnimationSpeed) {
 			animationTimer.setDelay((int)(animationTimer.getDelay()*2.0));
@@ -434,10 +482,10 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 				addInfoText("time: " + g.time() + "/" + evolution.simulationTime());
 			else
 				addInfoText("time: " + g.time());
-			if(g.timeBottomReached() == Integer.MAX_VALUE)
+			if(g.timeHighwayReached() == Integer.MAX_VALUE)
 				addInfoText("BottomReached at: inf");
 			else
-				addInfoText("BottomReached at: " + g.timeBottomReached());
+				addInfoText("BottomReached at: " + g.timeHighwayReached());
 		}
 	}
 	

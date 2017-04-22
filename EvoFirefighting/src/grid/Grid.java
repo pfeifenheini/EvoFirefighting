@@ -26,8 +26,8 @@ public class Grid implements Cloneable {
 	private int numberOfProtectedCells = 0;
 	/** Total number of burning cell per row. */
 	private int[] burningCellsPerRow;
-	/** First time a cell of the bottom row catches fire. Max value of Integer, if bottom is never reached. */
-	private int timeBottomReached = Integer.MAX_VALUE;
+	/** First time a highway cell would catches fire. Max value of Integer, if highway is never reached. */
+	private int firstHighwayCellReached = Integer.MAX_VALUE;
 	/** Contains all cells of the current fire front. These are the cells that will spread the fire in the next step. */
 	private Queue<Coordinate> fireFront = new LinkedList<Coordinate>();
 	
@@ -62,7 +62,7 @@ public class Grid implements Cloneable {
 		numberOfProtectedCells = 0;
 		for(int i=0;i<burningCellsPerRow.length;i++)
 			burningCellsPerRow[i] = 0;
-		timeBottomReached = Integer.MAX_VALUE;
+		firstHighwayCellReached = Integer.MAX_VALUE;
 		fireFront.clear();
 	}
 	
@@ -80,10 +80,10 @@ public class Grid implements Cloneable {
 				fireFront.add(new Coordinate(x,y));
 				numberOfBurningCells++;
 				burningCellsPerRow[y]++;
-				if(y==0 && timeBottomReached==Integer.MAX_VALUE)
-					timeBottomReached = time;
 				return true;
 			}
+			if(cells[x][y].state==State.Highway && firstHighwayCellReached==Integer.MAX_VALUE)
+				firstHighwayCellReached = time;
 		}
 		return false;
 	}
@@ -188,8 +188,8 @@ public class Grid implements Cloneable {
 	 * 
 	 * @return Time needed for the fire to reach the bottom. Max integer value, if the bottom was never reached.
 	 */
-	public int timeBottomReached() {
-		return timeBottomReached;
+	public int timeHighwayReached() {
+		return firstHighwayCellReached;
 	}
 	
 	/**
@@ -250,5 +250,13 @@ public class Grid implements Cloneable {
 		}
 		
 		return g;
+	}
+
+	/**
+	 * Defines the bottom cells as highway cells.
+	 */
+	public void setupHighway() {
+		for(int x=0;x<width;x++)
+			cells[x][0].state = State.Highway;
 	}
 }

@@ -29,6 +29,7 @@ public class ConnectedProtectionStrategy extends ConnectedStrategy {
 		super(simulationTime, initialAccount, budget, mutationRate, startOffset);
 		this.highwayDistance = highwayDistance;
 		grid = new Grid(2*this.simulationTime+1,this.simulationTime+this.highwayDistance+1);
+		grid.setupHighway();
 		startFire = new Coordinate(this.simulationTime,this.highwayDistance);
 		
 		if(startOffset == null)
@@ -45,10 +46,16 @@ public class ConnectedProtectionStrategy extends ConnectedStrategy {
 	public double fitness() {
 		if(fitness<0) {
 			while(step());
-			fitness = grid.timeBottomReached();
+			fitness = grid.timeHighwayReached();
 		}
 		return fitness;
 	};
+	
+	@Override
+	public void reset() {
+		super.reset();
+		grid.setupHighway();
+	}
 	
 	@Override
 	public int compareTo(Strategy s) {
@@ -57,8 +64,8 @@ public class ConnectedProtectionStrategy extends ConnectedStrategy {
 		while(step());
 		while(toCompare.step());
 		
-		if(grid.timeBottomReached()!=toCompare.grid.timeBottomReached()) {
-			return toCompare.grid.timeBottomReached()-grid.timeBottomReached();
+		if(grid.timeHighwayReached()!=toCompare.grid.timeHighwayReached()) {
+			return toCompare.grid.timeHighwayReached()-grid.timeHighwayReached();
 		}
 		
 		for(int row=0;row<grid.height();row++) {

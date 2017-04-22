@@ -29,6 +29,7 @@ public class ScatteredProtectionStrategy extends ScatteredStrategy {
 		super(simulationTime, initialAccount, budget, mutationRate);
 		this.highwayDistance = highwayDistance;
 		grid = new Grid(2*this.simulationTime+1,this.simulationTime+this.highwayDistance+1);
+		grid.setupHighway();
 		startFire = new Coordinate(this.simulationTime,this.highwayDistance);
 		
 		int x, y;
@@ -47,10 +48,16 @@ public class ScatteredProtectionStrategy extends ScatteredStrategy {
 	public double fitness() {
 		if(fitness<0) {
 			while(step());
-			fitness = grid.timeBottomReached();
+			fitness = grid.timeHighwayReached();
 		}
 		return fitness;
 	};
+	
+	@Override
+	public void reset() {
+		super.reset();
+		grid.setupHighway();
+	}
 	
 	@Override
 	public int compareTo(Strategy s) {
@@ -59,8 +66,8 @@ public class ScatteredProtectionStrategy extends ScatteredStrategy {
 		while(step());
 		while(toCompare.step());
 		
-		if(grid.timeBottomReached()!=toCompare.grid.timeBottomReached()) {
-			return toCompare.grid.timeBottomReached()-grid.timeBottomReached();
+		if(grid.timeHighwayReached()!=toCompare.grid.timeHighwayReached()) {
+			return toCompare.grid.timeHighwayReached()-grid.timeHighwayReached();
 		}
 		
 		for(int row=0;row<grid.height();row++) {

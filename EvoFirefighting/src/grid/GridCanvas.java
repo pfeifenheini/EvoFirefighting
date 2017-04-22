@@ -86,8 +86,17 @@ public class GridCanvas extends JPanel {
 	 * @return An image of the current grid.
 	 */
 	public BufferedImage getImage() {
-		Coordinate bottomLeft = new Coordinate(grid.width()-1,grid.height()-1);
+		Coordinate bottomLeft = new Coordinate(0,0);
 		Coordinate topRight = new Coordinate(0,0);
+		calculateInterestingPartOfTheGrid(grid, bottomLeft, topRight);
+		return getImage(bottomLeft, topRight);
+	}
+	
+	public static void calculateInterestingPartOfTheGrid(Grid grid, Coordinate bottomLeft, Coordinate topRight) {
+		bottomLeft.x = grid.width()-1;
+		bottomLeft.y = grid.height()-1;
+		topRight.x = 0;
+		topRight.y = 0;
 		for(int x=0;x<grid.width();x++) {
 			for(int y=0;y<grid.height();y++) {
 				if(grid.state(x, y) != State.Free) {
@@ -102,6 +111,9 @@ public class GridCanvas extends JPanel {
 				}
 			}
 		}
+	}
+	
+	public BufferedImage getImage(Coordinate bottomLeft, Coordinate topRight) {
 		BufferedImage image = new BufferedImage((topRight.x-bottomLeft.x+1)*10,(topRight.y-bottomLeft.y+1)*10,BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = image.createGraphics();
 		paintSector(g, bottomLeft, topRight, 10);
@@ -134,6 +146,9 @@ public class GridCanvas extends JPanel {
 							break;
 						case Protected:
 							g.setColor(Color.BLACK);
+							break;
+						case Highway:
+							g.setColor(Color.DARK_GRAY);
 							break;
 						}
 						g.fillRect(x*cellSize, (height-y-1)*cellSize, cellSize, cellSize);
