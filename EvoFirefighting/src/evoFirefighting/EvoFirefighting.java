@@ -2,12 +2,11 @@ package evoFirefighting;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
@@ -15,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -85,6 +85,8 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	// --- BUTTONS END --- \\
 	// ------------------- \\
 	
+	/** File choser to save the grid images */
+	JFileChooser fileChooser;
 	/** Delay between animation steps */
 	private static final int DEFAULT_ANIMATION_DELAY = 500;
 	/** Used to alter animation between protection and spreading */
@@ -200,8 +202,12 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		animate.setEnabled(false);
 		decreaseOffset.setEnabled(false);
 		increaseOffset.setEnabled(false);
+		save.setEnabled(false);
 		
 		loadGrid(new Grid(GridCanvas.DEFAULT_WIDTH,GridCanvas.DEFAULT_HEIGHT));
+		
+		fileChooser = new JFileChooser();
+		fileChooser.setCurrentDirectory(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
 		pack();
 	}
 	
@@ -260,10 +266,21 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	
 	/**
 	 * Saves the currently shown grid as an image
+	 * @param fileToSave File where the image will be saved
 	 */
-	private void saveImage() {
+	private void saveImage(File fileToSave) {
 		try {
-			ImageIO.write(canvas.getImage(), "png", new File("grid.png"));
+			if(fileToSave.exists()) {
+				int input = JOptionPane.showConfirmDialog(
+						this,
+						"The file \"" + fileToSave.getName() + "\" already exists.\nAre you sure you want to replace it?",
+						"Overwrite file?",
+						JOptionPane.YES_NO_OPTION);
+				if(input != JOptionPane.YES_OPTION)
+					return;
+			}
+			ImageIO.write(canvas.getImage(), "png", fileToSave);
+			System.out.println("Image saved: " + fileToSave.getAbsolutePath());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -288,7 +305,12 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			changeSettings();
 		}
 		if(e.getSource() == save) {
-			saveImage();
+			
+			int returnVal = fileChooser.showSaveDialog(this);
+			if(returnVal == JFileChooser.APPROVE_OPTION) {
+				File f = fileChooser.getSelectedFile();
+				saveImage(f);
+			}
 		}
 		if(e.getSource() == decreaseAnimationSpeed) {
 			animationTimer.setDelay((int)(animationTimer.getDelay()*2.0));
@@ -320,6 +342,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			animate.setEnabled(true);
 			decreaseOffset.setEnabled(true);
 			increaseOffset.setEnabled(true);
+			save.setEnabled(true);
 		}
 		if(e.getSource() == decreaseOffset) {
 			if((e.getModifiers() & ActionEvent.ALT_MASK) != 0)
@@ -445,6 +468,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		strategyChoice.setEnabled(false);
 		decreaseAnimationSpeed.setEnabled(true);
 		increaseAnimationSpeed.setEnabled(true);
+		save.setEnabled(false);
 		refreshTimer.stop();
 		animationTimer.start();
 	}
@@ -462,6 +486,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		strategyChoice.setEnabled(true);
 		decreaseAnimationSpeed.setEnabled(false);
 		increaseAnimationSpeed.setEnabled(false);
+		save.setEnabled(true);
 	}
 
 	/**
