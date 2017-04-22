@@ -208,6 +208,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		
 		fileChooser = new JFileChooser();
 		fileChooser.setCurrentDirectory(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
+		fileChooser.setSelectedFile(new File("grid.png"));
 		pack();
 	}
 	
