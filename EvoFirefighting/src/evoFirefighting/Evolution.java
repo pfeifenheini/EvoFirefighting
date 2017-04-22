@@ -2,6 +2,7 @@ package evoFirefighting;
 
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.Random;
 
 import grid.Coordinate;
 import strategy.Strategy;
@@ -162,11 +163,15 @@ public class Evolution implements Runnable{
 		return generation;
 	}
 	
-	@Override
-	public void run() {
-		running = true;
+	/**
+	 * Implements the evolution as a kind random optimization.
+	 * This means that every individual evolves independently. At each generation, each individual
+	 * is copied and mutated. If this mutation has a higher fitness than the original, the original
+	 * is replaced.
+	 */
+	private void algorithmRandomOptimization() {
 		Strategy tmp = population[0].clone();
-		synchronized(this) {
+		synchronized (this) {
 			while(running) {
 				for(int i=0;i<population.length;i++) {
 					tmp.copy(population[i]);
@@ -187,5 +192,41 @@ public class Evolution implements Runnable{
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Implements a usual evolutionary algorithm that follows the cycle 
+	 * External Selection -> ParentSelection -> Inheritance -> Mutation -> Fitness Evaluation.
+	 */
+	private void algorithmTypicalEvolution() {
+		int parents = population.length/5; // 20% are kept as parents
+		Random rand = new Random();
+		synchronized (this) {
+			while(running) {
+				
+				for(int i=parents;i<population.length;i++) {
+					population[i].copy(population[rand.nextInt(population.length)]);
+					population[i].mutate();
+				}
+			
+				Arrays.sort(population);
+				generation++;
+				if(pause) {
+					pause = false;
+					try {
+						wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void run() {
+		running = true;
+		algorithmRandomOptimization();
+//		algorithmTypicalEvolution();
 	}
 }
