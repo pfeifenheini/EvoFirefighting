@@ -221,7 +221,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		zoomIn.setToolTipText("increase the cell size");
 		zoomOut.setToolTipText("decrease the cell size");
 		settings.setToolTipText("change parameters");
-		save.setToolTipText("saves the current grid in as an image");
+		save.setToolTipText("saves the current grid in as an image and its animation as a gif");
 		decreaseAnimationSpeed.setToolTipText("decrease animation speed");
 		increaseAnimationSpeed.setToolTipText("increase animation speed");
 		animate.setToolTipText("start animation");
@@ -331,6 +331,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 		if(e.getSource() == zoomIn) {
 			canvas.setCellSize(canvas.getCellSize()+1);
 			zoomOut.setEnabled(true);
+			centerPane.setSize(canvas.getSize());
 			pack();
 		}
 		if(e.getSource() == zoomOut) {
@@ -338,6 +339,7 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 				canvas.setCellSize(canvas.getCellSize()-1);
 				if(canvas.getCellSize() == 1)
 					zoomOut.setEnabled(false);
+				centerPane.setSize(canvas.getSize());
 				pack();
 			}
 		}
@@ -483,9 +485,9 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 			else
 				addInfoText("time: " + g.time());
 			if(g.timeHighwayReached() == Integer.MAX_VALUE)
-				addInfoText("BottomReached at: inf");
+				addInfoText("highway reached at: inf");
 			else
-				addInfoText("BottomReached at: " + g.timeHighwayReached());
+				addInfoText("highway reached at: " + g.timeHighwayReached());
 		}
 	}
 	
@@ -582,6 +584,8 @@ public class EvoFirefighting extends JFrame implements ActionListener {
 	private void loadGrid(Grid g) {
 		canvas.loadGrid(g);
 		updateInfo();
+		centerPane.setSize(canvas.getSize());
+		pack();
 	}
 
 }
